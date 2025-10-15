@@ -1,7 +1,9 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
+import java.util.Scanner;
 
 import domain.Cliente;
 import domain.Cuenta;
@@ -12,6 +14,43 @@ public class Main {
 	private static ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
 	private static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 
+	
+	public void cargarClientes() {
+		File f = new File("/db/db_clientes.csv");
+		
+		try {
+			Scanner sc = new Scanner(f);
+			while(sc.hasNextLine()) {
+				try {
+					String linea = sc.nextLine();
+					String[] campos = linea.split(";");
+					
+					int id = Integer.parseInt(campos[0]);
+					String name = campos[1];
+					String a1 = campos[2];
+					String a2 = campos[3];
+					String dni = campos[4];
+					String[] cuentas = campos[5].split(",");
+					
+					ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
+					for(String numCuenta : cuentas) {
+						listaCuentas.add(null);
+					}
+					
+					Cliente cliente = new Cliente(id, name, a1, a2, dni, listaCuentas);
+					
+					
+					
+					
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO: handle exception
+		}
+		
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
@@ -40,8 +79,9 @@ public class Main {
 			listaCuentas.add(cuenta);
 		}
 		
+		System.out.println(listaClientes.get(1).getId());
 		System.out.println(listaClientes.size());
-		InterfazPrueba ventana = new InterfazPrueba();
+		//InterfazPrueba ventana = new InterfazPrueba();
 
 	}
 

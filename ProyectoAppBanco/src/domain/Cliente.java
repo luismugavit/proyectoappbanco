@@ -2,9 +2,15 @@ package domain;
 
 import java.util.ArrayList;
 
+
+/**
+ * Representa un cliente del banco.
+ * Contiene información personal y la lista de cuentas asociadas.
+ */
 public class Cliente {
 
 	private int id;
+	private static int cod = 0;
 	private String nombre;
 	private String apellido1;
 	private String apellido2;
@@ -15,12 +21,13 @@ public class Cliente {
 	public Cliente(int id, String nombre, String apellido1, String apellido2, String dni,
 			ArrayList<Cuenta> listaCuentas) {
 		super();
-		this.id = id;
+		this.id = cod;
 		this.nombre = nombre;
 		this.apellido1 = apellido1;
 		this.apellido2 = apellido2;
 		this.dni = dni;
 		this.listaCuentas = listaCuentas;
+		cod++;
 	}
 
 
@@ -90,8 +97,15 @@ public class Cliente {
 				+ ", dni=" + dni + ", listaCuentas=" + listaCuentas + "]";
 	}
 	
-	
-	
-	
+	/**
+	 * Devuelve el saldo total de un cliente sumando el de todas sus cuentas.
+	 */
+	public float getSaldoTotal() {
+		float saldo = 0.0f;
+		for(Cuenta c : listaCuentas) {
+			saldo += c.getSaldo();
+		}
+		return saldo;
+	}
 	
 }

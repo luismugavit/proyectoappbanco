@@ -1,11 +1,14 @@
 package domain;
 
+import java.util.ArrayList;
+
 public class Cuenta {
 	
 	
 	private String numeroCuenta;
 	private float saldo;
 	private Cliente propietario;
+	
 	
 	
 	public String getNumeroCuenta() {
@@ -37,7 +40,9 @@ public class Cuenta {
 		this.propietario = propietario;
 	}
 
-
+	/**
+	 * Representa cada una de las cuentas del banco, para crear una cuenta es necesario que se asocie un cliente a esta.
+	 */
 	public Cuenta(String numeroCuenta, float saldo, Cliente propietario) {
 		super();
 		this.numeroCuenta = numeroCuenta;
@@ -45,6 +50,14 @@ public class Cuenta {
 		this.propietario = propietario;
 	}
 
+	/**
+	 * Las cuentas pueden hacer transacciones entre ellas. 
+	 * 
+	 *
+	 */
+	public void transaccion(Cuenta destino, float cantidad) {
+		destino.setSaldo(destino.getSaldo()+cantidad);
+	}
 
 	@Override
 	public String toString() {

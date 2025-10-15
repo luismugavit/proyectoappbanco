@@ -1,0 +1,11 @@
+ID;NOMBRE;APELLIDO1;APELLIDO2;DNI;CUENTAS
+1;cliente-1;Perez;Gomez;12345678A;ES-1001
+2;cliente-2;Lopez;Martinez;12345679B;ES-1002
+3;cliente-3;Garcia;Sanchez;12345680C;ES-1003
+4;cliente-4;Fernandez;Ruiz;12345681D;ES-1004
+5;cliente-5;Rodriguez;Diaz;12345682E;ES-1005
+6;cliente-6;Martinez;Lopez;12345683F;ES-1006
+7;cliente-7;Santos;Morales;12345684G;ES-1007
+8;cliente-8;Ruiz;Castro;12345685H;ES-1008
+9;cliente-9;Diaz;Jimenez;12345686J;ES-1009
+10;cliente-10;Vega;Alonso;12345687K;ES-1010
