@@ -30,7 +30,15 @@ public class Cliente {
 		cod++;
 	}
 
-
+	public Cliente(String nombre, String apellido1, String apellido2, String dni) {
+		this.nombre = nombre;
+		this.apellido1 = apellido1;
+		this.apellido2 = apellido2;
+		this.dni = dni;
+		this.listaCuentas = new ArrayList<Cuenta>();
+		this.id = cod;
+		cod++;
+	}
 	public int getId() {
 		return id;
 	}

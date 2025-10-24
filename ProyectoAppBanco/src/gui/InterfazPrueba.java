@@ -2,8 +2,14 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -13,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import domain.Cliente;
 import domain.Cuenta;
@@ -54,13 +61,16 @@ public class InterfazPrueba extends JFrame{
 		menuClientes.add(itemVerClientes);
 		menuClientes.add(itemCrearCliente);
 		menuClientes.add(itemOpcionesCliente);
-		itemVerClientes.addActionListener(e -> card.show(panelCont, "tablaClientes"));
+		itemVerClientes.addActionListener(e -> {
+			//TODO hacer que la tabla se actualize al crear clientes nuevos.
+			tablaClientes = crearTablaClientes(listaClientes);
+			card.show(panelCont, "tablaClientes");
+		});
+		
 		itemMain.addActionListener(e -> card.show(panelCont, "inicio"));
+		itemCrearCliente.addActionListener(e -> card.show(panelCont, "crearCliente"));
 		
 		//
-		
-	
-		
 		
 		setVisible(true);
 	}
@@ -76,19 +86,64 @@ public class InterfazPrueba extends JFrame{
 	public void iniciarCardLayout(CardLayout card) {
 		
 		panelCont = new JPanel(card);
-		
+		//Panel Principal 
 		JPanel main = new JPanel();
 		main.add(new JLabel("Banco-Main"));
 		
+		//Panel de la tabla de clientes
 		
 		JPanel clientesPanel = new JPanel();
 		JScrollPane scroller = new JScrollPane(tablaClientes);
 		clientesPanel.add(scroller, BorderLayout.CENTER);
 		
+		//Panel de creación de clientes
+		JPanel addClientePanel = new JPanel(new BorderLayout());
+		addClientePanel.add(new JLabel("Add cliente", JLabel.CENTER), BorderLayout.NORTH);
+		JPanel camposTextoPanel = new JPanel(new GridLayout(4, 2, 1,60));
+		JTextField campoNombre = new JTextField();
+		JTextField campoApellido1 = new JTextField();
+		JTextField campoApellido2 = new JTextField();
+		JTextField campoDNI = new JTextField();
+		campoNombre.setMaximumSize(new Dimension(15,5));;
+		camposTextoPanel.add(new JLabel("Nombre", JLabel.CENTER));
+		camposTextoPanel.add(campoNombre);
+		camposTextoPanel.add(new JLabel("Apellido_1", JLabel.CENTER));
+		camposTextoPanel.add(campoApellido1);
+		camposTextoPanel.add(new JLabel("Apellido_2", JLabel.CENTER));
+		camposTextoPanel.add(campoApellido2);
+		camposTextoPanel.add(new JLabel("DNI", JLabel.CENTER));
+		camposTextoPanel.add(campoDNI);
+		
+		addClientePanel.add(camposTextoPanel);
+		camposTextoPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+	
+		
+		
+		JPanel botones = new JPanel();
+		
+		JButton botonCrearCliente = new JButton("Crear Cliente");
+		botones.add(botonCrearCliente);
+		addClientePanel.add(botones, BorderLayout.SOUTH);
+		
+		botonCrearCliente.addActionListener(e -> {
+			String nombreNuevoCliente = campoNombre.getText();
+			String apellido1NuevoCliente = campoApellido1.getText();
+			String apellido2NuevoCliente = campoApellido2.getText();
+			String dniNuevoCliente = campoDNI.getText();
+			Cliente newCliente = new Cliente(nombreNuevoCliente, apellido1NuevoCliente, apellido2NuevoCliente, dniNuevoCliente);
+			listaClientes.add(newCliente);
+			crearTablaClientes(listaClientes);
+			System.out.println(nombreNuevoCliente);
+			System.out.println(listaClientes.getLast());
+		});
+		
+		
+	
 		
 		panelCont.add(main, "inicio");
 		panelCont.add(clientesPanel, "tablaClientes");
-		
+		panelCont.add(addClientePanel, "crearCliente");
 		card.show(panelCont, "inicio");
 		
 		add(panelCont);
