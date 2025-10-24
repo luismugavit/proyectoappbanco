@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import domain.Cliente;
@@ -51,6 +52,7 @@ public class Main {
 		}
 		
 	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
@@ -77,11 +79,16 @@ public class Main {
 		
 		for (Cuenta cuenta : cuentas) {
 			listaCuentas.add(cuenta);
+			
 		}
 		
-		System.out.println(listaClientes.get(1).getId());
-		System.out.println(listaClientes.size());
-		//InterfazPrueba ventana = new InterfazPrueba();
+		for(int i= 0; i<clientes.length; i++) {
+			clientes[i].getListaCuentas().add(cuentas[i]);
+		}
+		
+
+		
+		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 
 	}
 
