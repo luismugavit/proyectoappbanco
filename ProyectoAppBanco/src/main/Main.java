@@ -16,8 +16,9 @@ public class Main {
 	private static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 
 	
-	public void cargarClientes() {
-		File f = new File("/db/db_clientes.csv");
+	public static void cargarClientes() {
+		
+		File f = new File("src/db/db_clientes.csv");
 		
 		try {
 			Scanner sc = new Scanner(f);
@@ -33,13 +34,21 @@ public class Main {
 					String dni = campos[4];
 					String[] cuentas = campos[5].split(",");
 					
-					ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
+					ArrayList<Cuenta> accs = new ArrayList<Cuenta>();
+					Cliente cliente = new Cliente(id, name, a1, a2, dni, accs);
+					
+					
 					for(String numCuenta : cuentas) {
-						listaCuentas.add(null);
+						String[] camposCuenta = numCuenta.split("=");
+						String numero = camposCuenta[0];
+						Float saldo = Float.parseFloat(camposCuenta[1]);
+						Cuenta cuenta = new Cuenta(numero, saldo,cliente );
+						listaCuentas.add(cuenta);
+						cliente.addCuenta(cuenta);
+						
 					}
 					
-					Cliente cliente = new Cliente(id, name, a1, a2, dni, listaCuentas);
-					
+					listaClientes.add(cliente);
 					
 					
 					
@@ -47,8 +56,10 @@ public class Main {
 					// TODO: handle exception
 				}
 			}
+			sc.close();
 		} catch (FileNotFoundException e) {
 			// TODO: handle exception
+			System.out.println("a");
 		}
 		
 	}
@@ -58,10 +69,10 @@ public class Main {
 		
 		
 		Cliente[] clientes = {
-				new Cliente(0, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(1, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(2, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(3, "A", "A", "A", "B", new ArrayList<Cuenta>()),
+				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>()),
+				new Cliente(12, "A", "A", "A", "B", new ArrayList<Cuenta>()),
+				new Cliente(13, "A", "A", "A", "B", new ArrayList<Cuenta>()),
+				new Cliente(14, "A", "A", "A", "B", new ArrayList<Cuenta>()),
 				
 		};
 		
@@ -87,7 +98,8 @@ public class Main {
 		}
 		
 
-		
+		cargarClientes();
+		System.out.println(listaClientes.size());
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 
 	}

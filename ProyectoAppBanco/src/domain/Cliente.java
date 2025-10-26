@@ -116,4 +116,8 @@ public class Cliente {
 		return saldo;
 	}
 	
+	public void addCuenta(Cuenta acc) {
+		listaCuentas.add(acc);
+	}
+	
 }
