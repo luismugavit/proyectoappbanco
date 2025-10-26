@@ -58,5 +58,10 @@ public class ModelTablaClientes extends AbstractTableModel{
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return false;
 	}
+	
+	public void addCliente(Cliente cliente) {
+        clientes.add(cliente);
+        //fireTableRowsInserted(clientes.size() - 1, clientes.size() - 1);
+    }
 
 }

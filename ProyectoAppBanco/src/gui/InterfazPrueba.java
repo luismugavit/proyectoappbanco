@@ -31,9 +31,11 @@ public class InterfazPrueba extends JFrame{
 	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Cliente> listaClientes;
+	private ModelTablaClientes modeloTabla;
 	private JTable tablaClientes;
-	private JPanel panelCont;
 	
+	
+	private JPanel panelCont;
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -42,7 +44,7 @@ public class InterfazPrueba extends JFrame{
 		setLocationRelativeTo(null);
 		this.listaClientes = listaClientes;
 		
-		tablaClientes = crearTablaClientes(listaClientes);
+		crearTablaClientes(listaClientes);
 		CardLayout card = new CardLayout();
 		iniciarCardLayout(card);
 		
@@ -62,8 +64,7 @@ public class InterfazPrueba extends JFrame{
 		menuClientes.add(itemCrearCliente);
 		menuClientes.add(itemOpcionesCliente);
 		itemVerClientes.addActionListener(e -> {
-			//TODO hacer que la tabla se actualize al crear clientes nuevos.
-			tablaClientes = crearTablaClientes(listaClientes);
+			
 			card.show(panelCont, "tablaClientes");
 		});
 		
@@ -75,12 +76,12 @@ public class InterfazPrueba extends JFrame{
 		setVisible(true);
 	}
 	
-	public JTable crearTablaClientes(ArrayList<Cliente> listaClientes) {
+	public void crearTablaClientes(ArrayList<Cliente> listaClientes) {
 		
-		ModelTablaClientes modeloTabla = new ModelTablaClientes(listaClientes);
-		JTable tablaClientes = new JTable(modeloTabla);
+		modeloTabla = new ModelTablaClientes(listaClientes);
+		tablaClientes = new JTable(modeloTabla);
 		tablaClientes.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		return tablaClientes;
+		
 	}
 	
 	public void iniciarCardLayout(CardLayout card) {
@@ -133,7 +134,9 @@ public class InterfazPrueba extends JFrame{
 			String dniNuevoCliente = campoDNI.getText();
 			Cliente newCliente = new Cliente(nombreNuevoCliente, apellido1NuevoCliente, apellido2NuevoCliente, dniNuevoCliente);
 			listaClientes.add(newCliente);
-			crearTablaClientes(listaClientes);
+			modeloTabla.fireTableDataChanged();
+			
+			
 			System.out.println(nombreNuevoCliente);
 			System.out.println(listaClientes.getLast());
 		});
