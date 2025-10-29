@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.ScrollPane;
 import java.awt.Scrollbar;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -17,12 +20,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import domain.Cliente;
 import domain.Cuenta;
@@ -39,7 +43,7 @@ public class InterfazPrueba extends JFrame{
 	private JPanel panelCont;		//Panel contenedor 
 	private CardLayout card;		//CardLayout permite alternar entre Paneles como si fuesen pestañas sin necesidad de abrir ventanas nuevas.
 	private JScrollPane scroller;
-	
+
 	
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
@@ -87,10 +91,72 @@ public class InterfazPrueba extends JFrame{
 		
 		modeloTabla = new ModelTablaClientes(listaClientes);
 		tablaClientes = new JTable(modeloTabla);
-
+		
+		MouseAdapter mouseAdapter = new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				int fila = tablaClientes.rowAtPoint(e.getPoint());
+				tabCliente(fila);
+				panelCont.add(tabCliente(fila), "ClienteSeleccionado");
+				card.show(panelCont, "ClienteSeleccionado");
+			}
+			
+			@Override
+	    	public void mouseMoved(MouseEvent e) {
+	    		// TODO Auto-generated method stub
+	    		
+	    	}
+			
+		};
+		
+		tablaClientes.addMouseListener(mouseAdapter);
 		scroller = new JScrollPane(tablaClientes);
 
 		
+	}
+	
+	public JPanel tabCliente(int fila) {
+		JPanel panelVistaCliente = new JPanel(new BorderLayout());
+		Cliente cliente = listaClientes.get(fila);
+		
+		
+		JLabel nombre = new JLabel((cliente.getNombre()+ " "+ cliente.getApellido1()+" "+cliente.getApellido2()).toUpperCase() );
+		nombre.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		//ArrayList<Cuenta>listaCuentas = cliente.getListaCuentas();
+		
+		JPanel info = new JPanel(new GridLayout(2,2,10,10));
+		
+		
+		JLabel saldoTotal = new JLabel("Saldo Total: " + cliente.getSaldoTotal() + " euros", JLabel.CENTER);
+		saldoTotal.setFont(new Font("Arial", Font.BOLD, 18));
+		saldoTotal.setBackground(Color.LIGHT_GRAY);
+		saldoTotal.setOpaque(true);
+		
+		
+		
+		info.add(saldoTotal);
+	
+		
+		
+		info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
+		
+		
+		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
+		ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
+		JTable tablaCuentas = new JTable(modeloCuentas1);
+		panelTablaCuentas.add(tablaCuentas);
+		panelTablaCuentas.add(tablaCuentas.getTableHeader(), BorderLayout.NORTH);
+		
+		info.add(panelTablaCuentas);
+		
+		
+		info.add(new JLabel("Botones: hacer transferencia, inrgesar dinero, retirar dinero"));
+		
+		panelVistaCliente.add(info);
+		panelVistaCliente.add(nombre, BorderLayout.NORTH);
+		return panelVistaCliente;
 	}
 	
 	public JPanel tabCrearCliente() {
@@ -130,10 +196,8 @@ public class InterfazPrueba extends JFrame{
 			Cliente newCliente = new Cliente(nombreNuevoCliente, apellido1NuevoCliente, apellido2NuevoCliente, dniNuevoCliente);
 			listaClientes.add(newCliente);
 			modeloTabla.fireTableDataChanged();
-			
-			
-			System.out.println(nombreNuevoCliente);
-			System.out.println(listaClientes.getLast());
+		
+			JOptionPane.showMessageDialog(null, "El cliente se ha añadido con éxito.", "Cliente añadido", JOptionPane.INFORMATION_MESSAGE);
 		});
 		
 		
@@ -186,6 +250,7 @@ public class InterfazPrueba extends JFrame{
 		//Panel de creación de clientes
 		
 		JPanel addClientePanel = tabCrearCliente();
+		
 		
 	
 		//Añadir paneles al panel contenedor
