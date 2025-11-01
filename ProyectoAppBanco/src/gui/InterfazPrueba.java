@@ -151,11 +151,68 @@ public class InterfazPrueba extends JFrame{
 		
 		info.add(panelTablaCuentas);
 		
+		// Panel de botones de Operaciones
+		JPanel panelBotonesCuenta = new JPanel();
+		JButton btnIngresar = new JButton("Ingresar");
+		JButton btnGastar = new JButton("Gastar");
+		// JButton btnTransferir = new JButton("Transferir");
+		panelBotonesCuenta.add(btnIngresar);
+		panelBotonesCuenta.add(btnGastar);
+		info.add(panelBotonesCuenta);
 		
-		info.add(new JLabel("Botones: hacer transferencia, inrgesar dinero, retirar dinero"));
 		
 		panelVistaCliente.add(info);
 		panelVistaCliente.add(nombre, BorderLayout.NORTH);
+		
+		// Listener para el BOTÓN INGRESAR
+		btnIngresar.addActionListener(e->{
+			int filaSel = tablaCuentas.getSelectedRow();
+			if (filaSel == -1) { // Si no selecciona la cuenta
+				JOptionPane.showMessageDialog(this, "Por favor, selecciona una cuenta primero.", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			Cuenta cuentaSeleccionada = cliente.getListaCuentas().get(filaSel);
+			String sCantidad = JOptionPane.showInputDialog(this, "Cantidad a ingresar:", "Ingreso", JOptionPane.PLAIN_MESSAGE);
+			String concepto = JOptionPane.showInputDialog(this, "Concepto:", "Ingreso", JOptionPane.PLAIN_MESSAGE);
+			try {
+				float cantidad = Float.parseFloat(sCantidad);
+				cuentaSeleccionada.ingreso(cantidad, concepto); //Llama al método de Cuenta
+				// Refrescar la tabla de cuentas y el saldo total
+				modeloCuentas1.fireTableDataChanged(); //fireTableDataChanged: indica que el contenido ha cambiado y tiene que redibujarse 
+				saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Actualiza el saldo
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		
+		//Listener para el Boton gastar
+		btnGastar.addActionListener(e -> {
+			int filaSel = tablaCuentas.getSelectedRow();
+			if (filaSel == -1) {
+				JOptionPane.showMessageDialog(this, "Por favor, selecciona una cuenta primero.", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			Cuenta cuentaSeleccionada = cliente.getListaCuentas().get(filaSel);
+			String sCantidad = JOptionPane.showInputDialog(this, "Cantidad a retirar:", "Gasto", JOptionPane.PLAIN_MESSAGE);
+			String concepto = JOptionPane.showInputDialog(this, "Concepto:", "Gasto", JOptionPane.PLAIN_MESSAGE);
+			
+			try {
+				float cantidad = Float.parseFloat(sCantidad);
+				if (!cuentaSeleccionada.gasto(cantidad, concepto)) { //Llama al método de Cuenta
+					JOptionPane.showMessageDialog(this, "Fondos insuficientes.", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					// Refrescar la tabla de cuentas y el saldo total
+					modeloCuentas1.fireTableDataChanged();
+					saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); //Actualiza el saldo
+				}
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			
+		});
+		
+		
+		
 		return panelVistaCliente;
 	}
 	
