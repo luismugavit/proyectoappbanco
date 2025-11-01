@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Prestamo;
 import gui.InterfazPrueba;
 
 public class Main {
@@ -35,7 +36,8 @@ public class Main {
 					String[] cuentas = campos[5].split(",");
 					
 					ArrayList<Cuenta> accs = new ArrayList<Cuenta>();
-					Cliente cliente = new Cliente(id, name, a1, a2, dni, accs);
+					ArrayList<Prestamo> prest = new ArrayList<Prestamo>();
+					Cliente cliente = new Cliente(id, name, a1, a2, dni, accs, prest );
 					
 					
 					for(String numCuenta : cuentas) {
@@ -69,10 +71,10 @@ public class Main {
 		
 		
 		Cliente[] clientes = {
-				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(12, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(13, "A", "A", "A", "B", new ArrayList<Cuenta>()),
-				new Cliente(14, "A", "A", "A", "B", new ArrayList<Cuenta>()),
+				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
+				new Cliente(12, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
+				new Cliente(13, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
+				new Cliente(14, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
 				
 		};
 		
