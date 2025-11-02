@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -119,48 +120,58 @@ public class InterfazPrueba extends JFrame{
 	public JPanel tabCliente(int fila) {
 		JPanel panelVistaCliente = new JPanel(new BorderLayout());
 		Cliente cliente = listaClientes.get(fila);
-		
-		
+
 		JLabel nombre = new JLabel((cliente.getNombre()+ " "+ cliente.getApellido1()+" "+cliente.getApellido2()).toUpperCase() );
 		nombre.setFont(new Font("Arial", Font.BOLD, 18));
-		
+
+		JPanel panelNorte = new JPanel(new BorderLayout());
+		nombre.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); //Esta linea generada con IA
+		panelNorte.add(nombre, BorderLayout.NORTH);
+
+		// Panel de Saldos (Total y Deuda)
+		JPanel panelSaldos = new JPanel(new GridLayout());
+
 		//ArrayList<Cuenta>listaCuentas = cliente.getListaCuentas();
-		
+
 		JPanel info = new JPanel(new GridLayout(2,2,10,10));
-		
-		
+
 		JLabel saldoTotal = new JLabel("Saldo Total: " + cliente.getSaldoTotal() + " euros", JLabel.CENTER);
 		saldoTotal.setFont(new Font("Arial", Font.BOLD, 18));
 		saldoTotal.setBackground(Color.LIGHT_GRAY);
 		saldoTotal.setOpaque(true);
-		
-		
-		
 		info.add(saldoTotal);
-	
-		
-		
+
+		JLabel deudaTotal = new JLabel("Deuda Total: " + cliente.getDeudaTotal() + " euros", JLabel.CENTER);
+		deudaTotal.setFont(new Font("Arial", Font.BOLD, 16));
+		deudaTotal.setBackground(Color.RED);
+		deudaTotal.setOpaque(true);
+
+		panelSaldos.add(saldoTotal);
+		panelSaldos.add(deudaTotal);
+		panelNorte.add(panelSaldos, BorderLayout.CENTER);
+		panelVistaCliente.add(panelNorte, BorderLayout.NORTH);
+
 		info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
-		
-		
+
 		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
 		ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
 		JTable tablaCuentas = new JTable(modeloCuentas1);
 		panelTablaCuentas.add(tablaCuentas);
 		panelTablaCuentas.add(tablaCuentas.getTableHeader(), BorderLayout.NORTH);
-		
+
 		info.add(panelTablaCuentas);
-		
+
 		// Panel de botones de Operaciones
+
 		JPanel panelBotonesCuenta = new JPanel();
 		JButton btnIngresar = new JButton("Ingresar");
 		JButton btnGastar = new JButton("Gastar");
+
 		// JButton btnTransferir = new JButton("Transferir");
+
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
 		info.add(panelBotonesCuenta);
-		
-		
 		panelVistaCliente.add(info);
 		panelVistaCliente.add(nombre, BorderLayout.NORTH);
 		
