@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Movimiento;
 import domain.Prestamo;
 import gui.InterfazPrueba;
 
@@ -53,7 +54,6 @@ public class Main {
 					listaClientes.add(cliente);
 					
 					
-					
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -65,6 +65,7 @@ public class Main {
 		}
 		
 	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -103,7 +104,8 @@ public class Main {
 		cargarClientes();
 		System.out.println(listaClientes.size());
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
-
+		
+		
 	}
 
 }
