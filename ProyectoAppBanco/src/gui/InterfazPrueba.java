@@ -38,8 +38,10 @@ public class InterfazPrueba extends JFrame{
 	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Cliente> listaClientes;
+	private ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	private ModelTablaClientes modeloTabla; 
 	private JTable tablaClientes; 	//Tabla que muestra todos los clientes del banco ID/Nombre/Saldo_Total
+	private JTable tablaCuentas;
 	private JPanel panelCont;		//Panel contenedor 
 	private CardLayout card;		//CardLayout permite alternar entre Paneles como si fuesen pestañas sin necesidad de abrir ventanas nuevas.
 	private JScrollPane scroller;
@@ -52,6 +54,7 @@ public class InterfazPrueba extends JFrame{
 		setSize(640,480);
 		setLocationRelativeTo(null);
 		this.listaClientes = listaClientes;
+		this.listaCuentas = listaCuenta;
 		
 		//iniciar CardLayout
 		card = new CardLayout();
@@ -73,14 +76,16 @@ public class InterfazPrueba extends JFrame{
 			menuBarra.add(menuClientes);
 			menuBarra.add(itemMain);
 			JMenuItem itemVerClientes = new JMenuItem("Tabla Clientes");
+			JMenuItem itemVerCuentas = new JMenuItem("Tabla Cuentas");
 			JMenuItem itemCrearCliente = new JMenuItem("Crear cliente");
 			JMenuItem itemOpcionesCliente = new JMenuItem("Opciones");
 			menuClientes.add(itemVerClientes);
+			menuClientes.add(itemVerCuentas);
 			menuClientes.add(itemCrearCliente);
 			menuClientes.add(itemOpcionesCliente);
-			
 			//Al clickar en el boton correspondiente a una pestaña esta se abre con card.show( panelCont, "identificador")
 			itemVerClientes.addActionListener(e -> card.show(panelCont, "tablaClientes"));
+			itemVerCuentas.addActionListener(e -> card.show(panelCont, "tablaCuentas"));
 			itemMain.addActionListener(e -> card.show(panelCont, "inicio"));
 			itemCrearCliente.addActionListener(e -> card.show(panelCont, "crearCliente"));
 			
@@ -115,6 +120,34 @@ public class InterfazPrueba extends JFrame{
 
 		
 	}
+	
+	public void crearTablaCuentas(ArrayList<Cuenta> listaCuentas) {
+		
+		ModeloTablaCuentas1 modeloTabla = new ModeloTablaCuentas1(listaCuentas);
+		tablaCuentas = new JTable(modeloTabla);
+		
+		MouseAdapter mouseAdapter = new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				int fila = tablaCuentas.rowAtPoint(e.getPoint());
+				tabCliente(fila);
+				panelCont.add(tabCliente(fila), "ClienteSeleccionado");
+				card.show(panelCont, "ClienteSeleccionado");
+			}
+			
+			@Override
+	    	public void mouseMoved(MouseEvent e) {
+	    		// TODO Auto-generated method stub
+	    		
+	    	}
+		};
+		
+		tablaCuentas.addMouseListener(mouseAdapter);
+		scroller = new JScrollPane(tablaCuentas);
+				
+	}
+	
 	
 	public JPanel tabCliente(int fila) {
 		JPanel panelVistaCliente = new JPanel(new BorderLayout());
@@ -289,7 +322,22 @@ public class InterfazPrueba extends JFrame{
 		return panelTablaClientes;
 	}
 	
-	
+	public JPanel tabTablaCuentas() {
+		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
+		
+		crearTablaCuentas(listaCuentas);
+		JPanel panelBotones = new JPanel();
+		JButton botonAddCuenta = new JButton("Añadir Cuenta");
+		
+		botonAddCuenta.addActionListener(e -> card.show(panelCont, "TablaCuentas"));
+		panelBotones.add(botonAddCuenta);
+		
+		panelTablaCuentas.add(scroller);
+		panelTablaCuentas.add(panelBotones, BorderLayout.WEST);
+
+		
+		return panelTablaCuentas;
+	}
 	public void iniciarCardLayout(CardLayout card) {
 		
 		panelCont = new JPanel(card);
@@ -308,12 +356,13 @@ public class InterfazPrueba extends JFrame{
 		
 		JPanel addClientePanel = tabCrearCliente();
 		
-		
+		JPanel panelTablaCuentas = tabTablaCuentas();
 	
 		//Añadir paneles al panel contenedor
 		panelCont.add(main, "inicio");
 		panelCont.add(panelTablaClientes, "tablaClientes");
 		panelCont.add(addClientePanel, "crearCliente");
+		panelCont.add(panelTablaCuentas, "tablaCuentas");
 		card.show(panelCont, "inicio");
 		
 		add(panelCont);
