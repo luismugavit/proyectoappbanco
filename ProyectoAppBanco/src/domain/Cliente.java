@@ -134,9 +134,14 @@ public class Cliente {
 		double total = 0;
 	    for (Prestamo p : prestamos) {
 	        if ("Activo".equals(p.getEstado())) {
-	            total += p.getCantidad();
+	            total += p.getCantidadPendiente();
 	        }
 	    }
 	    return total;
+	}
+	
+	public void solicitarPrestamo() {
+
+	    
 	}
 }
