@@ -10,6 +10,15 @@ public class Cuenta {
 	private float saldo;
 	private Cliente propietario;
 	private ArrayList<Movimiento> historial;
+	private static int id = 0;
+	
+	public Cuenta(Cliente cliente) {
+		this.numeroCuenta = "ES-" + id;
+		this.saldo = 0.0f;
+		this.propietario = cliente;
+		this.historial = new ArrayList<Movimiento>();
+		id++;
+	}
 	
 	
 	

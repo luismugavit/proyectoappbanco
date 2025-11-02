@@ -6,11 +6,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.ScrollPane;
-import java.awt.Scrollbar;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -24,13 +26,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
+
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Gasto;
+import domain.Ingreso;
+import domain.Movimiento;
 
 public class InterfazPrueba extends JFrame{
 
@@ -40,6 +45,7 @@ public class InterfazPrueba extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Cliente> listaClientes;
 	private ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
+	private ArrayList<Movimiento> registroMovimientos = new ArrayList<Movimiento>();
 	private ModelTablaClientes modeloTabla; 
 	private JTable tablaClientes; 	//Tabla que muestra todos los clientes del banco ID/Nombre/Saldo_Total
 	private JTable tablaCuentas;
@@ -66,7 +72,7 @@ public class InterfazPrueba extends JFrame{
 		setJMenuBar(menuBarra);
 		crearOpcionesMenu(menuBarra);
 		
-		setVisible(true);
+		//setVisible(true);
 	}
 	
 	public void crearOpcionesMenu(JMenuBar menuBarra) {
@@ -157,14 +163,6 @@ public class InterfazPrueba extends JFrame{
 		JLabel nombre = new JLabel((cliente.getNombre()+ " "+ cliente.getApellido1()+" "+cliente.getApellido2()).toUpperCase() );
 		nombre.setFont(new Font("Arial", Font.BOLD, 18));
 
-		JPanel panelNorte = new JPanel(new BorderLayout());
-		nombre.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); //Esta linea generada con IA
-		panelNorte.add(nombre, BorderLayout.NORTH);
-
-		// Panel de Saldos (Total y Deuda)
-		JPanel panelSaldos = new JPanel(new GridLayout());
-
-		//ArrayList<Cuenta>listaCuentas = cliente.getListaCuentas();
 
 		JPanel info = new JPanel(new GridLayout(2,2,10,10));
 
@@ -179,21 +177,37 @@ public class InterfazPrueba extends JFrame{
 		deudaTotal.setBackground(Color.RED);
 		deudaTotal.setOpaque(true);
 
-		panelSaldos.add(saldoTotal);
-		panelSaldos.add(deudaTotal);
-		panelNorte.add(panelSaldos, BorderLayout.CENTER);
-		panelVistaCliente.add(panelNorte, BorderLayout.NORTH);
-
-		info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
+	
 
 		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
+		
+		
+		
 		ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
 		JTable tablaCuentas = new JTable(modeloCuentas1);
+		
+		
+		JButton btnAddCuenta = new JButton("Nueva cuenta");
+		
+		
+		btnAddCuenta.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Cuenta newCuenta = new Cuenta(cliente);
+				cliente.addCuenta(newCuenta);
+				JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
+				tablaCuentas.repaint();
+			}
+		});
+		
+		panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
 		panelTablaCuentas.add(tablaCuentas);
 		panelTablaCuentas.add(tablaCuentas.getTableHeader(), BorderLayout.NORTH);
 
 		info.add(panelTablaCuentas);
 
+		info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
 		// Panel de botones de Operaciones
 
 		JPanel panelBotonesCuenta = new JPanel();
@@ -205,6 +219,9 @@ public class InterfazPrueba extends JFrame{
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
 		info.add(panelBotonesCuenta);
+		
+		
+		
 		panelVistaCliente.add(info);
 		panelVistaCliente.add(nombre, BorderLayout.NORTH);
 		
@@ -218,6 +235,9 @@ public class InterfazPrueba extends JFrame{
 			Cuenta cuentaSeleccionada = cliente.getListaCuentas().get(filaSel);
 			String sCantidad = JOptionPane.showInputDialog(this, "Cantidad a ingresar:", "Ingreso", JOptionPane.PLAIN_MESSAGE);
 			String concepto = JOptionPane.showInputDialog(this, "Concepto:", "Ingreso", JOptionPane.PLAIN_MESSAGE);
+			Movimiento newMov = new Ingreso(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
+			registroMovimientos.add(newMov);
+			
 			try {
 				float cantidad = Float.parseFloat(sCantidad);
 				cuentaSeleccionada.ingreso(cantidad, concepto); //Llama al método de Cuenta
@@ -240,12 +260,16 @@ public class InterfazPrueba extends JFrame{
 			String sCantidad = JOptionPane.showInputDialog(this, "Cantidad a retirar:", "Gasto", JOptionPane.PLAIN_MESSAGE);
 			String concepto = JOptionPane.showInputDialog(this, "Concepto:", "Gasto", JOptionPane.PLAIN_MESSAGE);
 			
+			
 			try {
 				float cantidad = Float.parseFloat(sCantidad);
 				if (!cuentaSeleccionada.gasto(cantidad, concepto)) { //Llama al método de Cuenta
 					JOptionPane.showMessageDialog(this, "Fondos insuficientes.", "Error", JOptionPane.ERROR_MESSAGE);
 				} else {
 					// Refrescar la tabla de cuentas y el saldo total
+					Movimiento newMov = new Gasto(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
+					registroMovimientos.add(newMov);
+					System.out.println(registroMovimientos.getLast());
 					modeloCuentas1.fireTableDataChanged();
 					saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); //Actualiza el saldo
 				}

@@ -3,12 +3,12 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Scanner;
 
 import domain.Cliente;
 import domain.Cuenta;
-import domain.Movimiento;
+
 import domain.Prestamo;
 import gui.InterfazPrueba;
 
@@ -104,7 +104,7 @@ public class Main {
 		cargarClientes();
 		System.out.println(listaClientes.size());
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
-		
+		ventana.setVisible(true);
 		
 	}
 
