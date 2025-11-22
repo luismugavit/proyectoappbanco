@@ -13,6 +13,7 @@ public class ModeloTablaPrestamos extends AbstractTableModel{
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<Prestamo> prestamos;
+	private String[] columnas = {"ID", "Monto", "Cuota Mes", "Pendiente", "Estado"};
 	
 	public ModeloTablaPrestamos(List<Prestamo> prestamos) {
 		this.prestamos = prestamos;
@@ -21,37 +22,29 @@ public class ModeloTablaPrestamos extends AbstractTableModel{
 
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
 		return prestamos.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 3;
+		return columnas.length;
 	}
 	
 	@Override
 	public String getColumnName(int column) {
-		String nombreColumna = "";
-		switch(column) {
-		case 0 -> nombreColumna = "CANTIDAD";
-		case 1 -> nombreColumna = "PLAZO";
-		case 2 -> nombreColumna = "INTERES";
-		}
-		return nombreColumna;
+		return columnas[column];
 	}
-
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
 		Prestamo prestamo = prestamos.get(rowIndex);
 		return switch (columnIndex) {
-		case 0 -> prestamo.getCantidad();
-		case 1 -> prestamo.getFechaFin();
-		case 2 -> prestamo.getInteres();
-		default -> null;
+        case 0 -> prestamo.getId();
+        case 1 -> String.format("%.2f €", prestamo.getCantidadSolicitada());
+        case 2 -> String.format("%.2f €", prestamo.getCuotaMensual());
+        case 3 -> String.format("%.2f €", prestamo.getCantidadPendiente());
+        case 4 -> prestamo.getEstado();
+        default -> null;
 		};
 		
 	}

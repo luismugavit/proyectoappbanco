@@ -3,25 +3,45 @@ package domain;
 import java.time.LocalDate;
 
 public class Prestamo {
+	private static int contadorId = 1;
+	private int id;
 
 	private Cliente cliente;         	// Cliente que solicita el préstamo
-	private double cantidad;        	// Cantidad total del préstamo
+	private double cantidadSolicitada;        	// Cantidad total del préstamo
 	private double cantidadPendiente;	// Cantidad pendiente por pagar
-	private double interes;      		// Interés anual (%)
+	private double interesAnual;      	// Interés anual (%)
+	private int plazoMeses;				// Duración en meses
+	private double cuotaMensual;		// Lo que paga cada mes
 	private LocalDate fechaInicio;      // Fecha en la que se otorgó
 	private LocalDate fechaFin;         // Fecha estimada de finalización
 	private String estado;           	// "Activo", "Pagado", "En mora", etc.
 	
-	public Prestamo(Cliente cliente, double cantidad, double interes, LocalDate fechaInicio, LocalDate fechaFin,
-			String estado, double cantidadPendiente) {
+	public Prestamo(Cliente cliente, double cantidadSolicitada, double interesAnual, LocalDate fechaInicio, LocalDate fechaFin,
+			String estado, double cantidadPendiente, int plazoMeses, double cuotaMensual, int meses) {
 		super();
+		this.setId(contadorId++);
 		this.cliente = cliente;
-		this.cantidad = cantidad;
-		this.cantidadPendiente = cantidadPendiente;
-		this.interes = interes;
-		this.fechaInicio = fechaInicio;
-		this.fechaFin = fechaFin;
-		this.estado = estado;
+		this.cantidadSolicitada = cantidadSolicitada;
+		this.interesAnual = interesAnual;
+		this.plazoMeses = meses;
+		this.fechaInicio = LocalDate.now();
+		this.fechaFin = fechaInicio.plusMonths(meses); //Linea con ayuda de IA
+		this.estado = "Activo";
+		
+		this.cuotaMensual = calcularCuotaMensual();
+		
+		this.cantidadPendiente = this.cuotaMensual * meses;
+	}
+
+	private double calcularCuotaMensual() {
+		if (interesAnual == 0) {
+			return cantidadSolicitada / plazoMeses;
+		}
+		
+        double tasaMensual = (interesAnual / 100) / 12;
+        double cuota = cantidadSolicitada * (tasaMensual * Math.pow(1 + tasaMensual, plazoMeses)) /		//Ayuda de IA para la formula
+                (Math.pow(1 + tasaMensual, plazoMeses) - 1);
+        return cuota;
 	}
 
 	public Cliente getCliente() {
@@ -32,20 +52,13 @@ public class Prestamo {
 		this.cliente = cliente;
 	}
 
-	public double getCantidad() {
-		return cantidad;
+
+	public double getInteresAnual() {
+		return interesAnual;
 	}
 
-	public void setCantidad(double cantidad) {
-		this.cantidad = cantidad;
-	}
-
-	public double getInteres() {
-		return interes;
-	}
-
-	public void setInteres(double interes) {
-		this.interes = interes;
+	public void setInteresAnual(double interes) {
+		this.interesAnual = interes;
 	}
 
 	public LocalDate getFechaInicio() {
@@ -74,7 +87,7 @@ public class Prestamo {
 
 	@Override
 	public String toString() {
-		return "Prestamo [cliente=" + cliente + ", cantidad=" + cantidad + ", interes=" + interes + ", fechaInicio="
+		return "Prestamo [cliente=" + cliente + ", cantidadSolicitada=" + cantidadSolicitada + ", interesAnual=" + interesAnual + ", fechaInicio="
 				+ fechaInicio + ", fechaFin=" + fechaFin + ", estado=" + estado + "]";
 	}
 
@@ -87,7 +100,7 @@ public class Prestamo {
 	}
 	
 	public void realizarPago(double monto) {
-        if (monto > 0 && monto <= this.cantidadPendiente) {
+        if (monto > 0 && estado.equals("Activo")) {
             this.cantidadPendiente -= monto;
             if (this.cantidadPendiente <= 0.01) { 
                 this.cantidadPendiente = 0;
@@ -95,5 +108,37 @@ public class Prestamo {
             }
         }
     }
+
+	public int getPlazoMeses() {
+		return plazoMeses;
+	}
+
+	public void setPlazoMeses(int plazoMeses) {
+		this.plazoMeses = plazoMeses;
+	}
+
+	public double getCuotaMensual() {
+		return cuotaMensual;
+	}
+
+	public void setCuotaMensual(double cuotaMensual) {
+		this.cuotaMensual = cuotaMensual;
+	}
+
+	public double getCantidadSolicitada() {
+		return cantidadSolicitada;
+	}
+
+	public void setCantidadSolicitada(double cantidadSolicitada) {
+		this.cantidadSolicitada = cantidadSolicitada;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 }

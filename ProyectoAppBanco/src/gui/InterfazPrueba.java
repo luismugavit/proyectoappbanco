@@ -221,9 +221,74 @@ public class InterfazPrueba extends JFrame{
 		info.add(panelBotonesCuenta);
 		
 		
-		
 		panelVistaCliente.add(info);
 		panelVistaCliente.add(nombre, BorderLayout.NORTH);
+		
+// Ayuda de IA para algun apartado de prestamos
+        
+        JButton btnPrestamo = new JButton("Solicitar Préstamo");
+        panelBotonesCuenta.add(btnPrestamo); 
+
+     // Listener para el BOTÓN PRESTAMO
+        btnPrestamo.addActionListener(e -> {
+            // 1. Validar que hay una cuenta seleccionada para ingresar el dinero
+            int filaSel = tablaCuentas.getSelectedRow();
+            if (filaSel == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona una cuenta para recibir el dinero.", "Atención", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            Cuenta cuentaDestino = cliente.getListaCuentas().get(filaSel);
+
+            // 2. Crear un panel con 3 campos para pedir los datos a la vez
+            JPanel panelInputs = new JPanel(new GridLayout(3, 2, 5, 5));
+            
+            JTextField txtCantidad = new JTextField();
+            JTextField txtInteres = new JTextField("5.0"); 
+            JTextField txtPlazo = new JTextField("12");    
+            
+            panelInputs.add(new JLabel("Cantidad (€):"));
+            panelInputs.add(txtCantidad);
+            panelInputs.add(new JLabel("Interés Anual (%):"));
+            panelInputs.add(txtInteres);
+            panelInputs.add(new JLabel("Plazo (meses):"));
+            panelInputs.add(txtPlazo);
+
+            // 3. Mostrar la ventana
+            int result = JOptionPane.showConfirmDialog(null, panelInputs, "Solicitud de Préstamo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            // 4. Procesar la respuesta si dio OK
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    double cantidad = Double.parseDouble(txtCantidad.getText());
+                    double interes = Double.parseDouble(txtInteres.getText());
+                    int meses = Integer.parseInt(txtPlazo.getText());
+
+                    if (cantidad <= 0 || meses <= 0) {
+                        JOptionPane.showMessageDialog(this, "La cantidad y el plazo deben ser positivos.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // --- LLAMADA AL MODELO ---
+                    boolean exito = cliente.solicitarPrestamo(cantidad, interes, meses, cuentaDestino);
+
+                    if (exito) {
+                        // 5. Actualizar la Interfaz
+                        modeloCuentas1.fireTableDataChanged(); // Refrescar tabla cuentas
+                        saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Refrescar saldo
+                        deudaTotal.setText("Deuda Total: " + String.format("%.2f", cliente.getDeudaTotal()) + " euros"); // Refrescar deuda
+                        
+                        Movimiento movPrestamo = new Ingreso(LocalDate.now(), (float)cantidad, "Préstamo Concedido", cuentaDestino);
+                        registroMovimientos.add(movPrestamo);
+
+                        JOptionPane.showMessageDialog(this, "¡Préstamo concedido y dinero ingresado!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Por favor, introduce números válidos.", "Error formato", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
 		
 		// Listener para el BOTÓN INGRESAR
 		btnIngresar.addActionListener(e->{
@@ -282,6 +347,9 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		return panelVistaCliente;
+		
+		
+		
 	}
 	
 	public JPanel tabCrearCliente() {

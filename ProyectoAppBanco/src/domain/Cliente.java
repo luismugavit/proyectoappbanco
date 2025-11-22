@@ -132,16 +132,30 @@ public class Cliente {
 	
 	public double getDeudaTotal() {
 		double total = 0;
-	    for (Prestamo p : prestamos) {
-	        if ("Activo".equals(p.getEstado())) {
-	            total += p.getCantidadPendiente();
-	        }
-	    }
+		if (prestamos != null ) {
+			for (Prestamo p : prestamos) {
+		        if ("Activo".equals(p.getEstado())) {
+		            total += p.getCantidadPendiente();
+		        }
+		    }
+		} 
 	    return total;
 	}
 	
-	public void solicitarPrestamo() {
-
+	public boolean solicitarPrestamo(double cantidad, double interes, int meses, Cuenta cuentaDestino) {
+		if (cuentaDestino == null || cantidad <= 0) {
+	        return false;
+	    }
+	    
+	    Prestamo nuevoPrestamo = new Prestamo(this, cantidad, interes, null, null, apellido1, meses, meses, interes, meses);
+	    
+	    
+	    this.prestamos.add(nuevoPrestamo);
+	    
+	    
+	    cuentaDestino.ingreso((float)cantidad, "Concesión Préstamo ID: " + nuevoPrestamo.getId());
+	    
+	    return true;
 	    
 	}
 }
