@@ -48,7 +48,6 @@ public class Main {
 						Cuenta cuenta = new Cuenta(numero, saldo,cliente );
 						listaCuentas.add(cuenta);
 						cliente.addCuenta(cuenta);
-						
 					}
 					
 					listaClientes.add(cliente);

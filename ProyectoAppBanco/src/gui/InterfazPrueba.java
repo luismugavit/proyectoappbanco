@@ -5,17 +5,21 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
-
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,7 +33,8 @@ import javax.swing.JScrollPane;
 
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
+import javax.swing.SwingConstants;
+import javax.swing.table.TableCellRenderer;
 
 import domain.Cliente;
 import domain.Cuenta;
@@ -47,12 +52,13 @@ public class InterfazPrueba extends JFrame{
 	private ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	private ArrayList<Movimiento> registroMovimientos = new ArrayList<Movimiento>();
 	private ModelTablaClientes modeloTabla; 
+	private ModeloTablaCuentas1 modeloTablaCuentas;
 	private JTable tablaClientes; 	//Tabla que muestra todos los clientes del banco ID/Nombre/Saldo_Total
 	private JTable tablaCuentas;
 	private JPanel panelCont;		//Panel contenedor 
 	private CardLayout card;		//CardLayout permite alternar entre Paneles como si fuesen pestañas sin necesidad de abrir ventanas nuevas.
 	private JScrollPane scroller;
-
+	private int filaSelec = -1;
 	
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
@@ -78,7 +84,11 @@ public class InterfazPrueba extends JFrame{
 	public void crearOpcionesMenu(JMenuBar menuBarra) {
 		//Opciones relativas a los clientes del banco
 			JMenu menuClientes = new JMenu("Clientes");
+			
 			JMenuItem itemMain = new JMenuItem("Main");
+			itemMain.setIcon(new ImageIcon("resources/home.png"));
+			itemMain.setOpaque(true);
+			
 			
 			menuBarra.add(menuClientes);
 			menuBarra.add(itemMain);
@@ -103,7 +113,64 @@ public class InterfazPrueba extends JFrame{
 		
 		modeloTabla = new ModelTablaClientes(listaClientes);
 		tablaClientes = new JTable(modeloTabla);
+		tablaClientes.setRowHeight(20);
+		tablaClientes.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(270);
+		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
 		
+		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+			
+			JLabel result = new JLabel();
+			
+			if (value instanceof String) {
+				result.setText(value.toString());
+			}else {
+				result.setText(String.valueOf(value));
+//				if(value instanceof Float){
+//					
+////					if( Float.valueOf((Float)value)< 0.0) {
+////						result.setForeground(Color.red);
+////					}else {
+////						result.setForeground(Color.green);
+////					}
+//					
+//				}
+			}
+			
+			
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			if(row % 2 == 0) {
+				result.setBackground(new Color(235, 238, 255));
+			}else {
+				result.setBackground(Color.WHITE);
+			}
+			
+			
+			
+			result.setOpaque(true);
+			return result;
+			
+			
+		};
+		
+		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			
+			result.setText(value.toString());
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setBackground(new Color(24, 5, 92));
+			result.setForeground(Color.white);
+			result.setOpaque(true);
+			result.setFont(new Font("Arial", Font.BOLD, 14));
+			return result;
+			
+			
+		};
+		tablaClientes.getTableHeader().setPreferredSize(new Dimension(tablaClientes.getPreferredSize().width,32));
+		tablaClientes.setDefaultRenderer(Object.class, renderer);
+		tablaClientes.getTableHeader().setDefaultRenderer(headerRenderer);
 		MouseAdapter mouseAdapter = new MouseAdapter() {
 			
 			@Override
@@ -130,9 +197,57 @@ public class InterfazPrueba extends JFrame{
 	
 	public void crearTablaCuentas(ArrayList<Cuenta> listaCuentas) {
 		
-		ModeloTablaCuentas1 modeloTabla = new ModeloTablaCuentas1(listaCuentas);
-		tablaCuentas = new JTable(modeloTabla);
+		modeloTablaCuentas = new ModeloTablaCuentas1(listaCuentas);
+		tablaCuentas = new JTable(modeloTablaCuentas);
+		tablaCuentas.setRowHeight(20);
+		tablaCuentas.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tablaCuentas.getColumnModel().getColumn(0).setPreferredWidth(220);
+		tablaCuentas.getColumnModel().getColumn(1).setPreferredWidth(270);
+
+		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+			
+			JLabel result = new JLabel();
+			
+			if (value instanceof String) {
+				result.setText(value.toString());
+			}else {
+				result.setText(String.valueOf(value));
+			
+			}
+			
+			
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			if(row % 2 == 0) {
+				result.setBackground(new Color(235, 238, 255));
+			}else {
+				result.setBackground(Color.WHITE);
+			}
+			
+			
+			
+			result.setOpaque(true);
+			return result;
+			
+			
+		};
 		
+		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			
+			result.setText(value.toString());
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setBackground(new Color(24, 5, 92));
+			result.setForeground(Color.white);
+			result.setOpaque(true);
+			result.setFont(new Font("Arial", Font.BOLD, 14));
+			return result;
+			
+			
+		};
+		
+		tablaCuentas.setDefaultRenderer(Object.class, renderer);
+		tablaCuentas.getTableHeader().setDefaultRenderer(headerRenderer);
 		MouseAdapter mouseAdapter = new MouseAdapter() {
 			
 			@Override
@@ -184,10 +299,71 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
-		JTable tablaCuentas = new JTable(modeloCuentas1);
+		JTable tablaCuentasC = new JTable(modeloCuentas1);
 		
+		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+			
+			JLabel result = new JLabel();
+			
+			
+			
+			
+			if (value instanceof String) {
+				result.setText(value.toString());
+			}else {
+				result.setText(String.valueOf(value));
+			
+			}
+			
+			
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			if(row % 2 == 0) {
+				result.setBackground(new Color(235, 238, 255));
+			}else {
+				result.setBackground(Color.WHITE);
+			}
+			
+			if(row == filaSelec) {
+				result.setBackground(new Color(155, 129, 248));
+			}
+			
+			
+			
+			result.setOpaque(true);
+			return result;
+			
+			
+		};
+		
+		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			
+			result.setText(value.toString());
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setBackground(new Color(24, 5, 92));
+			result.setForeground(Color.white);
+			result.setOpaque(true);
+			result.setFont(new Font("Arial", Font.BOLD, 14));
+			return result;
+			
+			
+		};
+		tablaCuentasC.setDefaultRenderer(Object.class, renderer);
+		tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
 		
 		JButton btnAddCuenta = new JButton("Nueva cuenta");
+		
+		
+		tablaCuentasC.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				filaSelec = tablaCuentasC.rowAtPoint(e.getPoint());
+				tablaCuentasC.repaint();
+			}
+		});
+		
 		
 		
 		btnAddCuenta.addActionListener(new ActionListener() {
@@ -196,14 +372,20 @@ public class InterfazPrueba extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				Cuenta newCuenta = new Cuenta(cliente);
 				cliente.addCuenta(newCuenta);
+				listaCuentas.add(newCuenta);
+				System.out.println(listaCuentas.getLast().getNumeroCuenta());
 				JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
+				tablaCuentasC.repaint();
 				tablaCuentas.repaint();
+				modeloTablaCuentas.fireTableDataChanged();
 			}
 		});
 		
+//		JScrollPane scroll = new JScrollPane(tablaCuentasC);
+		
 		panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
-		panelTablaCuentas.add(tablaCuentas);
-		panelTablaCuentas.add(tablaCuentas.getTableHeader(), BorderLayout.NORTH);
+		panelTablaCuentas.add(tablaCuentasC);
+		panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
 
 		info.add(panelTablaCuentas);
 
@@ -232,7 +414,7 @@ public class InterfazPrueba extends JFrame{
      // Listener para el BOTÓN PRESTAMO
         btnPrestamo.addActionListener(e -> {
             // 1. Validar que hay una cuenta seleccionada para ingresar el dinero
-            int filaSel = tablaCuentas.getSelectedRow();
+            int filaSel = tablaCuentasC.getSelectedRow();
             if (filaSel == -1) {
                 JOptionPane.showMessageDialog(this, "Selecciona una cuenta para recibir el dinero.", "Atención", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -292,7 +474,7 @@ public class InterfazPrueba extends JFrame{
 		
 		// Listener para el BOTÓN INGRESAR
 		btnIngresar.addActionListener(e->{
-			int filaSel = tablaCuentas.getSelectedRow();
+			int filaSel = tablaCuentasC.getSelectedRow();
 			if (filaSel == -1) { // Si no selecciona la cuenta
 				JOptionPane.showMessageDialog(this, "Por favor, selecciona una cuenta primero.", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
@@ -316,7 +498,7 @@ public class InterfazPrueba extends JFrame{
 		
 		//Listener para el Boton gastar
 		btnGastar.addActionListener(e -> {
-			int filaSel = tablaCuentas.getSelectedRow();
+			int filaSel = tablaCuentasC.getSelectedRow();
 			if (filaSel == -1) {
 				JOptionPane.showMessageDialog(this, "Por favor, selecciona una cuenta primero.", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
@@ -401,6 +583,12 @@ public class InterfazPrueba extends JFrame{
 	public JPanel crearMainPanel() {
 		JPanel main = new JPanel();
 		main.add(new JLabel("Banco-Main"));
+		
+		
+		
+		
+		//Poner previsualizaciones
+		
 		return main;
 	}
 	
@@ -410,7 +598,15 @@ public class InterfazPrueba extends JFrame{
 		
 		crearTablaClientes(listaClientes);
 		JPanel panelBotones = new JPanel();
-		JButton botonAddCliente = new JButton("Añadir Cliente");
+		
+		//Image imagen = ((ImageIcon) icono).getImage().getScaledInstance(40, 50, Image.SCALE_DEFAULT);
+		
+		
+		Icon icono2 = redimensionarIconoHQ("src/resources/addUser.png", 60, 80);
+		
+		JButton botonAddCliente = new JButton(icono2);
+		//botonAddCliente.setIcon(new ImageIcon());
+		botonAddCliente.setOpaque(true);
 		
 		botonAddCliente.addActionListener(e -> card.show(panelCont, "crearCliente") );
 		panelBotones.add(botonAddCliente);
@@ -470,4 +666,24 @@ public class InterfazPrueba extends JFrame{
 		
 		add(panelCont);
 	}
+	
+	
+	//Método para redimensionar imagenes sin mucho pixelado, Generado con chatGPT.
+	public static ImageIcon redimensionarIconoHQ(String ruta, int ancho, int alto) {
+	    ImageIcon iconoOriginal = new ImageIcon(ruta);
+	    Image imagenOriginal = iconoOriginal.getImage();
+
+	    BufferedImage imagenEscalada = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2d = imagenEscalada.createGraphics();
+
+	    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+	    g2d.drawImage(imagenOriginal, 0, 0, ancho, alto, null);
+	    g2d.dispose();
+
+	    return new ImageIcon(imagenEscalada);
+	}
+
 }
