@@ -83,7 +83,7 @@ public class InterfazPrueba extends JFrame{
 	
 	public void crearOpcionesMenu(JMenuBar menuBarra) {
 		//Opciones relativas a los clientes del banco
-			JMenu menuClientes = new JMenu("Clientes");
+			JMenu menuClientes = new JMenu("Opciones");
 			
 			JMenuItem itemMain = new JMenuItem("Main");
 			itemMain.setIcon(new ImageIcon("resources/home.png"));
@@ -96,16 +96,20 @@ public class InterfazPrueba extends JFrame{
 			JMenuItem itemVerCuentas = new JMenuItem("Tabla Cuentas");
 			JMenuItem itemCrearCliente = new JMenuItem("Crear cliente");
 			JMenuItem itemOpcionesCliente = new JMenuItem("Opciones");
+			JMenuItem itemGrafica = new JMenuItem("Acciones");
+			
 			menuClientes.add(itemVerClientes);
 			menuClientes.add(itemVerCuentas);
 			menuClientes.add(itemCrearCliente);
 			menuClientes.add(itemOpcionesCliente);
+			menuClientes.add(itemGrafica);
+			
 			//Al clickar en el boton correspondiente a una pestaña esta se abre con card.show( panelCont, "identificador")
 			itemVerClientes.addActionListener(e -> card.show(panelCont, "tablaClientes"));
 			itemVerCuentas.addActionListener(e -> card.show(panelCont, "tablaCuentas"));
 			itemMain.addActionListener(e -> card.show(panelCont, "inicio"));
 			itemCrearCliente.addActionListener(e -> card.show(panelCont, "crearCliente"));
-			
+			itemGrafica.addActionListener(e-> card.show(panelCont, "grafica"));
 			//
 	}
 	
@@ -637,6 +641,13 @@ public class InterfazPrueba extends JFrame{
 		
 		return panelTablaCuentas;
 	}
+	
+	public JPanel tabGrafica() {
+		JPanel panel = new JPanel(new BorderLayout());
+		
+		panel.add(new GraficaAcciones());
+		return panel;
+	}
 	public void iniciarCardLayout(CardLayout card) {
 		
 		panelCont = new JPanel(card);
@@ -655,13 +666,21 @@ public class InterfazPrueba extends JFrame{
 		
 		JPanel addClientePanel = tabCrearCliente();
 		
+		//Panel tabla cuentas
+		
 		JPanel panelTablaCuentas = tabTablaCuentas();
 	
+		//Panel Grafica (hilos)
+		
+		JPanel panelGrafica = tabGrafica();
+		
 		//Añadir paneles al panel contenedor
+		
 		panelCont.add(main, "inicio");
 		panelCont.add(panelTablaClientes, "tablaClientes");
 		panelCont.add(addClientePanel, "crearCliente");
 		panelCont.add(panelTablaCuentas, "tablaCuentas");
+		panelCont.add(panelGrafica, "grafica");
 		card.show(panelCont, "inicio");
 		
 		add(panelCont);
