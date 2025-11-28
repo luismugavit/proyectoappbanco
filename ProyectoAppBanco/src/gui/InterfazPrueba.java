@@ -399,12 +399,15 @@ public class InterfazPrueba extends JFrame{
 		JPanel panelBotonesCuenta = new JPanel();
 		JButton btnIngresar = new JButton("Ingresar");
 		JButton btnGastar = new JButton("Gastar");
+		JButton btnSimular = new JButton("Simular Inversión");
 
 		// JButton btnTransferir = new JButton("Transferir");
 
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
+		panelBotonesCuenta.add(btnSimular);
 		info.add(panelBotonesCuenta);
+		
 		
 		
 		panelVistaCliente.add(info);
@@ -529,6 +532,31 @@ public class InterfazPrueba extends JFrame{
 			}
 			
 		});
+		
+		// Boton para Recursividad, simular capital futura con 5% de interes
+	    btnSimular.addActionListener(e -> {
+	        try {
+	            String sCapital = JOptionPane.showInputDialog(this, "Capital inicial a invertir (€):", "Calculadora Recursiva", JOptionPane.QUESTION_MESSAGE);
+	            String sAnios = JOptionPane.showInputDialog(this, "¿A cuántos años?", "Calculadora Recursiva", JOptionPane.QUESTION_MESSAGE);
+
+	            if (sCapital != null && sAnios != null) {
+	                float capital = Float.parseFloat(sCapital);
+	                int anios = Integer.parseInt(sAnios);
+	                float interesFijo = 5.0f; // 5% de interés
+
+	                float beneficioFinal = calcularBeneficioRecursivo(capital, interesFijo, anios);
+
+
+	                JOptionPane.showMessageDialog(this, 
+	                    "Cálculo realizado:\n" +
+	                    "Invirtiendo " + capital + "€ al " + interesFijo + "% durante " + anios + " años,\n" +
+	                    "obtendrás: " + String.format("%.2f", beneficioFinal) + " €",
+	                    "Resultado Inversión", JOptionPane.INFORMATION_MESSAGE);
+	            }
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(this, "Por favor, introduce números válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    });
 		
 		
 		
@@ -703,6 +731,19 @@ public class InterfazPrueba extends JFrame{
 	    g2d.dispose();
 
 	    return new ImageIcon(imagenEscalada);
+	}
+	
+	
+	public float calcularBeneficioRecursivo(float capitalActual, float interesAnual, int aniosRestantes) {
+		// Caso Base
+		if (aniosRestantes == 0) {
+			return capitalActual;
+		}
+		// Caso Recursivo
+		float nuevoCapital = capitalActual + (capitalActual * (interesAnual / 100));
+		return calcularBeneficioRecursivo(nuevoCapital, interesAnual, aniosRestantes - 1);
+		
+		
 	}
 
 }
