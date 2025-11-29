@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -41,6 +42,8 @@ import domain.Cuenta;
 import domain.Gasto;
 import domain.Ingreso;
 import domain.Movimiento;
+import domain.Transaccion;
+import domain.Transferencia;
 
 public class InterfazPrueba extends JFrame{
 
@@ -69,6 +72,10 @@ public class InterfazPrueba extends JFrame{
 		this.listaClientes = listaClientes;
 		this.listaCuentas = listaCuenta;
 		
+		//Movimientos de prueba
+		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
+		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
+		registroMovimientos.add(new Gasto(LocalDate.now(), 500.0f, "prueba", listaCuenta.get(0)));
 		//iniciar CardLayout
 		card = new CardLayout();
 		iniciarCardLayout(card);
@@ -95,13 +102,13 @@ public class InterfazPrueba extends JFrame{
 			JMenuItem itemVerClientes = new JMenuItem("Tabla Clientes");
 			JMenuItem itemVerCuentas = new JMenuItem("Tabla Cuentas");
 			JMenuItem itemCrearCliente = new JMenuItem("Crear cliente");
-			JMenuItem itemOpcionesCliente = new JMenuItem("Opciones");
+			//JMenuItem itemOpcionesCliente = new JMenuItem("Opciones");
 			JMenuItem itemGrafica = new JMenuItem("Acciones");
 			
 			menuClientes.add(itemVerClientes);
 			menuClientes.add(itemVerCuentas);
 			menuClientes.add(itemCrearCliente);
-			menuClientes.add(itemOpcionesCliente);
+			//menuClientes.add(itemOpcionesCliente);
 			menuClientes.add(itemGrafica);
 			
 			//Al clickar en el boton correspondiente a una pestaña esta se abre con card.show( panelCont, "identificador")
@@ -274,7 +281,6 @@ public class InterfazPrueba extends JFrame{
 				
 	}
 	
-	
 	public JPanel tabCliente(int fila) {
 		JPanel panelVistaCliente = new JPanel(new BorderLayout());
 		Cliente cliente = listaClientes.get(fila);
@@ -393,7 +399,66 @@ public class InterfazPrueba extends JFrame{
 
 		info.add(panelTablaCuentas);
 
-		info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
+		//info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
+		
+		ArrayList<Movimiento> listaMovimientos = new ArrayList<Movimiento>();
+		for(Movimiento mov : registroMovimientos) {
+			if(!(mov instanceof Transferencia)) {
+				if(mov instanceof Gasto) {
+					if(((Gasto)mov).origen().getPropietario().equals(cliente)) {
+						listaMovimientos.add(mov);
+					}
+				}else {
+					if(((Ingreso)mov).getDestino().getPropietario().equals(cliente)) {
+						listaMovimientos.add(mov);
+					}
+				}
+			}
+		}
+		
+		ModeloTablaMovimiento modeloMovs = new ModeloTablaMovimiento(listaMovimientos);
+		JTable tablaMovimientosCliente = new JTable(modeloMovs);
+		
+		tablaMovimientosCliente.setShowGrid(false);
+		tablaMovimientosCliente.setRowHeight(20);
+		
+		TableCellRenderer rendererMovs = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			
+			if(value instanceof Gasto) {
+				result.setBackground(new Color(224, 103, 103));
+				if ( column == 1) {
+					result.setBackground(new Color(255, 207, 207));
+				}
+			}else if(value instanceof Ingreso) {
+				result.setBackground(new Color(124, 230, 124));
+				if (column == 1) {
+					result.setBackground(new Color(207, 255, 207));
+				}
+			}
+			
+			if(column == 0) {
+				result.setText(((Movimiento)value).getFecha().toString());
+			}else if(column == 1) {
+				result.setText(((Movimiento)value).getCantidad()+"");
+				
+			}else {
+				result.setText(((Movimiento)value).getConcepto());
+			}
+			
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setOpaque(true);
+			return result;
+			
+		};
+		tablaMovimientosCliente.setDefaultRenderer(Object.class, rendererMovs);
+		
+		
+		
+		
+		
+		
+		
 		// Panel de botones de Operaciones
 
 		JPanel panelBotonesCuenta = new JPanel();
@@ -408,6 +473,8 @@ public class InterfazPrueba extends JFrame{
 		panelBotonesCuenta.add(btnSimular);
 		info.add(panelBotonesCuenta);
 		
+		
+		info.add(tablaMovimientosCliente);
 		
 		
 		panelVistaCliente.add(info);
@@ -491,7 +558,7 @@ public class InterfazPrueba extends JFrame{
 			String concepto = JOptionPane.showInputDialog(this, "Concepto:", "Ingreso", JOptionPane.PLAIN_MESSAGE);
 			Movimiento newMov = new Ingreso(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
 			registroMovimientos.add(newMov);
-			
+			listaMovimientos.add(newMov);
 			try {
 				float cantidad = Float.parseFloat(sCantidad);
 				cuentaSeleccionada.ingreso(cantidad, concepto); //Llama al método de Cuenta
@@ -501,6 +568,7 @@ public class InterfazPrueba extends JFrame{
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			tablaMovimientosCliente.repaint();
 		});
 		
 		//Listener para el Boton gastar
@@ -523,6 +591,7 @@ public class InterfazPrueba extends JFrame{
 					// Refrescar la tabla de cuentas y el saldo total
 					Movimiento newMov = new Gasto(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
 					registroMovimientos.add(newMov);
+					listaMovimientos.add(newMov);
 					System.out.println(registroMovimientos.getLast());
 					modeloCuentas1.fireTableDataChanged();
 					saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); //Actualiza el saldo
@@ -530,6 +599,7 @@ public class InterfazPrueba extends JFrame{
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			tablaMovimientosCliente.repaint();
 			
 		});
 		
@@ -676,6 +746,7 @@ public class InterfazPrueba extends JFrame{
 		panel.add(new GraficaAcciones());
 		return panel;
 	}
+	
 	public void iniciarCardLayout(CardLayout card) {
 		
 		panelCont = new JPanel(card);
@@ -715,7 +786,7 @@ public class InterfazPrueba extends JFrame{
 	}
 	
 	
-	//Método para redimensionar imagenes sin mucho pixelado, Generado con chatGPT.
+	//IAG: Método para redimensionar imagenes sin mucho pixelado, Generado con chatGPT.
 	public static ImageIcon redimensionarIconoHQ(String ruta, int ancho, int alto) {
 	    ImageIcon iconoOriginal = new ImageIcon(ruta);
 	    Image imagenOriginal = iconoOriginal.getImage();
