@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,7 +41,6 @@ import domain.Cuenta;
 import domain.Gasto;
 import domain.Ingreso;
 import domain.Movimiento;
-import domain.Transaccion;
 import domain.Transferencia;
 
 public class InterfazPrueba extends JFrame{
@@ -62,6 +60,7 @@ public class InterfazPrueba extends JFrame{
 	private CardLayout card;		//CardLayout permite alternar entre Paneles como si fuesen pestañas sin necesidad de abrir ventanas nuevas.
 	private JScrollPane scroller;
 	private int filaSelec = -1;
+	private JLabel lblTotalClientes, lblTotalCuentas, lblCapitalTotal;
 	
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
@@ -114,7 +113,7 @@ public class InterfazPrueba extends JFrame{
 			//Al clickar en el boton correspondiente a una pestaña esta se abre con card.show( panelCont, "identificador")
 			itemVerClientes.addActionListener(e -> card.show(panelCont, "tablaClientes"));
 			itemVerCuentas.addActionListener(e -> card.show(panelCont, "tablaCuentas"));
-			itemMain.addActionListener(e -> card.show(panelCont, "inicio"));
+			itemMain.addActionListener(e -> {actualizarDashboard(); card.show(panelCont, "inicio");});
 			itemCrearCliente.addActionListener(e -> card.show(panelCont, "crearCliente"));
 			itemGrafica.addActionListener(e-> card.show(panelCont, "grafica"));
 			//
@@ -687,17 +686,131 @@ public class InterfazPrueba extends JFrame{
 		return addClientePanel;
 	}
 	
+	
 	public JPanel crearMainPanel() {
-		JPanel main = new JPanel();
-		main.add(new JLabel("Banco-Main"));
+		JPanel main = new JPanel(new BorderLayout());
+		main.setBackground(Color.WHITE);
+
+		JPanel pNorte = new JPanel(new BorderLayout());
+		pNorte.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pNorte.setPreferredSize(new Dimension(800, 60));
+		
+		JLabel titulo = new JLabel("  DEUSTOBANK PRINCIPAL"); 
+		titulo.setFont(new Font("Arial", Font.BOLD, 24));
+		titulo.setForeground(Color.WHITE);
+		
+		
+		JLabel lblReloj = new JLabel("00:00:00  "); 
+		lblReloj.setFont(new Font("Arial", Font.BOLD, 18));
+		lblReloj.setForeground(Color.WHITE);
+		
+		javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
+			java.time.LocalDateTime ahora = java.time.LocalDateTime.now(); // La hora actual 
+			String hora = ahora.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")); // Horas : Minutos : Segundos
+			lblReloj.setText(hora + "  ");
+		});
+		timer.start();
+
+		pNorte.add(titulo, BorderLayout.WEST);
+		pNorte.add(lblReloj, BorderLayout.EAST);
+		
+		main.add(pNorte, BorderLayout.NORTH); 
+
+		
+		int numCuentas = 0;
+		double dineroTotal = 0;
+		
+		for(Cliente c : listaClientes) {
+			numCuentas = numCuentas + c.getListaCuentas().size();
+			dineroTotal = dineroTotal + c.getSaldoTotal();
+		}
+
+		
+		JPanel pCentro = new JPanel(new GridLayout(2, 1, 10, 10)); 
+		pCentro.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+		
+		JPanel pStats = new JPanel(new GridLayout(1, 3, 20, 0)); 
+		
+		
+		JPanel pStat1 = new JPanel(new GridLayout(2,1));
+		pStat1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		pStat1.setBackground(new Color(230, 230, 255)); 
+		JLabel l1 = new JLabel("CLIENTES", JLabel.CENTER);
+		lblTotalClientes = new JLabel("0", JLabel.CENTER); 
+		lblTotalClientes.setFont(new Font("Arial", Font.BOLD, 30));
+		pStat1.add(lblTotalClientes);
+		pStat1.add(l1);
+		
+		
+		JPanel pStat2 = new JPanel(new GridLayout(2,1));
+		pStat2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		pStat2.setBackground(new Color(230, 255, 230)); 
+		JLabel l2 = new JLabel("CUENTAS", JLabel.CENTER);
+		lblTotalCuentas = new JLabel("0", JLabel.CENTER);
+		lblTotalCuentas.setFont(new Font("Arial", Font.BOLD, 30));
+		pStat2.add(lblTotalCuentas);
+		pStat2.add(l2);
+		
+		
+		JPanel pStat3 = new JPanel(new GridLayout(2,1));
+		pStat3.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		pStat3.setBackground(new Color(255, 255, 230)); 
+		JLabel l3 = new JLabel("CAPITAL TOTAL", JLabel.CENTER);
+		lblCapitalTotal = new JLabel("0.00 €", JLabel.CENTER);
+		lblCapitalTotal.setFont(new Font("Arial", Font.BOLD, 24));
+		pStat3.add(lblCapitalTotal);
+		pStat3.add(l3);
+		actualizarDashboard();
+		
+		pStats.add(pStat1);
+		pStats.add(pStat2);
+		pStats.add(pStat3);
 		
 		
 		
+		JPanel pBotones = new JPanel(new GridLayout(1, 2, 20, 0));
+		pBotones.setBorder(BorderFactory.createTitledBorder("Accesos directos"));
 		
-		//Poner previsualizaciones
+		JButton b1 = new JButton("GESTIONAR CLIENTES");
+		b1.setFont(new Font("Arial", Font.BOLD, 16));
 		
+		JButton b2 = new JButton("VER GRÁFICAS");
+		b2.setFont(new Font("Arial", Font.BOLD, 16));
+		
+		
+		b1.addActionListener(e -> card.show(panelCont, "tablaClientes")); // CardLayout para tabla de clientes
+		b2.addActionListener(e -> card.show(panelCont, "grafica")); // CardLayout para inversiones
+		
+		pBotones.add(b1);
+		pBotones.add(b2);
+		
+		
+		pCentro.add(pStats);
+		pCentro.add(pBotones);
+		
+		main.add(pCentro, BorderLayout.CENTER); 
+
 		return main;
 	}
+	
+	public void actualizarDashboard() {
+		int numClientes = listaClientes.size();
+		int numCuentas = 0;
+		double dineroTotal = 0;
+		
+		for(Cliente c : listaClientes) {
+			numCuentas += c.getListaCuentas().size();
+			dineroTotal += c.getSaldoTotal();
+		}
+		
+		if (lblTotalClientes != null) lblTotalClientes.setText(String.valueOf(numClientes));
+		if (lblTotalCuentas != null) lblTotalCuentas.setText(String.valueOf(numCuentas));
+		if (lblCapitalTotal != null) lblCapitalTotal.setText(String.format("%,.2f €", dineroTotal));
+	}
+	
+	
+	
+	
 	
 	public JPanel tabTablaClientes() {
 		
