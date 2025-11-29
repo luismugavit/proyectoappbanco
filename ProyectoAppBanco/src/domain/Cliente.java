@@ -15,8 +15,8 @@ public class Cliente {
 	private String apellido1;
 	private String apellido2;
 	private String dni;
-	private ArrayList<Cuenta> listaCuentas;
-	private ArrayList<Prestamo> prestamos;
+	private ArrayList<Prestamo> prestamos = new ArrayList<>(); 
+    private ArrayList<Cuenta> listaCuentas = new ArrayList<>();
 	
 	
 	public Cliente(int id, String nombre, String apellido1, String apellido2, String dni,
@@ -27,8 +27,8 @@ public class Cliente {
 		this.apellido1 = apellido1;
 		this.apellido2 = apellido2;
 		this.dni = dni;
-		this.listaCuentas = listaCuentas;
-		this.prestamos = prestamos;
+		if(listaCuentas != null) this.listaCuentas = listaCuentas;
+        if(prestamos != null) this.prestamos = prestamos;
 		cod++;
 	}
 
@@ -37,7 +37,6 @@ public class Cliente {
 		this.apellido1 = apellido1;
 		this.apellido2 = apellido2;
 		this.dni = dni;
-		this.listaCuentas = new ArrayList<Cuenta>();
 		this.id = cod;
 		cod++;
 	}
@@ -132,13 +131,12 @@ public class Cliente {
 	
 	public double getDeudaTotal() {
 		double total = 0;
-		if (prestamos != null ) {
 			for (Prestamo p : prestamos) {
 		        if ("Activo".equals(p.getEstado())) {
 		            total += p.getCantidadPendiente();
 		        }
 		    }
-		} 
+		 
 	    return total;
 	}
 	
@@ -147,7 +145,7 @@ public class Cliente {
 	        return false;
 	    }
 	    
-	    Prestamo nuevoPrestamo = new Prestamo(this, cantidad, interes, null, null, apellido1, meses, meses, interes, meses);
+	    Prestamo nuevoPrestamo = new Prestamo(this, cantidad, interes, meses);
 	    
 	    
 	    this.prestamos.add(nuevoPrestamo);

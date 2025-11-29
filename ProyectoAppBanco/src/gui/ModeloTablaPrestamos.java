@@ -48,5 +48,10 @@ public class ModeloTablaPrestamos extends AbstractTableModel{
 		};
 		
 	}
+	
+	public void setPrestamos(List<Prestamo> prestamos) {
+        this.prestamos = prestamos;
+        fireTableDataChanged();
+    }
 
 }

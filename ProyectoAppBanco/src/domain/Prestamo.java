@@ -7,7 +7,7 @@ public class Prestamo {
 	private int id;
 
 	private Cliente cliente;         	// Cliente que solicita el préstamo
-	private double cantidadSolicitada;        	// Cantidad total del préstamo
+	private double cantidadSolicitada;  // Cantidad total del préstamo
 	private double cantidadPendiente;	// Cantidad pendiente por pagar
 	private double interesAnual;      	// Interés anual (%)
 	private int plazoMeses;				// Duración en meses
@@ -16,16 +16,16 @@ public class Prestamo {
 	private LocalDate fechaFin;         // Fecha estimada de finalización
 	private String estado;           	// "Activo", "Pagado", "En mora", etc.
 	
-	public Prestamo(Cliente cliente, double cantidadSolicitada, double interesAnual, LocalDate fechaInicio, LocalDate fechaFin,
-			String estado, double cantidadPendiente, int plazoMeses, double cuotaMensual, int meses) {
+	public Prestamo(Cliente cliente, double cantidadSolicitada, double interesAnual, int meses) {
 		super();
-		this.setId(contadorId++);
+		this.id = contadorId++;
 		this.cliente = cliente;
 		this.cantidadSolicitada = cantidadSolicitada;
 		this.interesAnual = interesAnual;
 		this.plazoMeses = meses;
+		
 		this.fechaInicio = LocalDate.now();
-		this.fechaFin = fechaInicio.plusMonths(meses); //Linea con ayuda de IA
+		this.fechaFin = fechaInicio.plusMonths(meses); 
 		this.estado = "Activo";
 		
 		this.cuotaMensual = calcularCuotaMensual();
@@ -37,6 +37,8 @@ public class Prestamo {
 		if (interesAnual == 0) {
 			return cantidadSolicitada / plazoMeses;
 		}
+		
+		if(plazoMeses == 0) return 0;
 		
         double tasaMensual = (interesAnual / 100) / 12;
         double cuota = cantidadSolicitada * (tasaMensual * Math.pow(1 + tasaMensual, plazoMeses)) /		//Ayuda de IA para la formula
@@ -102,7 +104,7 @@ public class Prestamo {
 	public void realizarPago(double monto) {
         if (monto > 0 && estado.equals("Activo")) {
             this.cantidadPendiente -= monto;
-            if (this.cantidadPendiente <= 0.01) { 
+            if (this.cantidadPendiente <= 0.10) { 
                 this.cantidadPendiente = 0;
                 this.estado = "Pagado";
             }

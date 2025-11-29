@@ -289,7 +289,7 @@ public class InterfazPrueba extends JFrame{
 		nombre.setFont(new Font("Arial", Font.BOLD, 18));
 
 
-		JPanel info = new JPanel(new GridLayout(2,2,10,10));
+		JPanel info = new JPanel(new GridLayout(0,2,10,10));
 
 		JLabel saldoTotal = new JLabel("Saldo Total: " + cliente.getSaldoTotal() + " euros", JLabel.CENTER);
 		saldoTotal.setFont(new Font("Arial", Font.BOLD, 18));
@@ -301,7 +301,11 @@ public class InterfazPrueba extends JFrame{
 		deudaTotal.setFont(new Font("Arial", Font.BOLD, 16));
 		deudaTotal.setBackground(Color.RED);
 		deudaTotal.setOpaque(true);
-
+		
+		ModeloTablaPrestamos modeloPrestamos = new ModeloTablaPrestamos(cliente.getPrestamos());
+		JTable tablaPrestamos = new JTable(modeloPrestamos);
+		JScrollPane scrollPrestamos = new JScrollPane(tablaPrestamos);
+		scrollPrestamos.setBorder(BorderFactory.createTitledBorder("Préstamos Activos"));
 	
 
 		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
@@ -472,7 +476,7 @@ public class InterfazPrueba extends JFrame{
 		panelBotonesCuenta.add(btnGastar);
 		panelBotonesCuenta.add(btnSimular);
 		info.add(panelBotonesCuenta);
-		
+		info.add(scrollPrestamos);
 		
 		info.add(tablaMovimientosCliente);
 		
@@ -524,12 +528,13 @@ public class InterfazPrueba extends JFrame{
                         return;
                     }
 
-                    // --- LLAMADA AL MODELO ---
+                    
                     boolean exito = cliente.solicitarPrestamo(cantidad, interes, meses, cuentaDestino);
 
                     if (exito) {
                         // 5. Actualizar la Interfaz
                         modeloCuentas1.fireTableDataChanged(); // Refrescar tabla cuentas
+                        modeloPrestamos.fireTableDataChanged();
                         saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Refrescar saldo
                         deudaTotal.setText("Deuda Total: " + String.format("%.2f", cliente.getDeudaTotal()) + " euros"); // Refrescar deuda
                         
