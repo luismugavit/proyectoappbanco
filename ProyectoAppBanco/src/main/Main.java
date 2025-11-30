@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import java.util.Scanner;
 
+import db.GestorBaseDatos;
 import domain.Cliente;
 import domain.Cuenta;
 
@@ -68,7 +69,18 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+//		GestorBaseDatos db = new GestorBaseDatos();
+//
+//        // 1. Crear la tabla (solo la crea si no existe)
+//        db.inicializarBaseDatos();
+//
+//        // 2. Insertar algunos datos de prueba
+//        db.insertarCliente("Juan Perez", 1500.50);
+//        db.insertarCliente("Ana Gomez", 2300.00);
+//
+//        // 3. Leer y mostrar en consola
+//        System.out.println("Lista de clientes");
+//        db.leerClientes();
 		
 		Cliente[] clientes = {
 				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
@@ -104,6 +116,7 @@ public class Main {
 		System.out.println(listaClientes.size());
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 		ventana.setVisible(true);
+		
 		
 	}
 
