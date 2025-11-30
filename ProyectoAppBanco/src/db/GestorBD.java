@@ -10,6 +10,7 @@ import java.util.List;
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Movimiento;
 import domain.Prestamo;
 
 public class GestorBD {
@@ -65,20 +66,22 @@ public class GestorBD {
 	private ArrayList<Prestamo> loadPrestamos() {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
 		ArrayList<Cliente> clientes  = loadClientes();
+		Cliente cliente = new Cliente(0, null, null, null, null, null, null);
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMOS")) {
 				ResultSet rsPrestamo = pstPrestamo.executeQuery();
 				
 				while (rsPrestamo.next()) {
-					int id = rsPrestamo.getInt("ID");
 					double cantidadSolicitada = rsPrestamo.getDouble("CANTIDAD_SOLICITADA");
-					double cantidadPendiente = rsPrestamo.getDouble("CANTIDAD_PENDIENTE");
 					double interesAnual = rsPrestamo.getDouble("INTERES_ANUAL");
 					int plazoMeses = rsPrestamo.getInt("PLAZO_MESES");
-					double cuotaMensual = rsPrestamo.getDouble("CUOTA_MENSUAL");
-					LocalDate fechaInicio = LocalDate.of(0000, 00, 00); //Falta por implementar
-					LocalDate fechaFin = LocalDate.of(0000, 00, 00);	//Falta por implementar
-					Cliente cliente = new Cliente(0, null, null, null, null, null, null); //Falta por implementar
+					int idCliente = rsPrestamo.getInt("ID_CLIENTE");
+					for (Cliente c : clientes) {
+						if (c.getId() == idCliente ) {
+							cliente = c;
+							break;
+						}
+					}
 					Prestamo prestamo = new Prestamo(cliente, cantidadSolicitada, interesAnual, plazoMeses);
 					prestamos.add(prestamo);
 				}
@@ -121,7 +124,6 @@ public class GestorBD {
 	@SuppressWarnings("unused")
 	private boolean UpdateCliente(Cliente cliente) {
 		boolean updated = false;
-		String sqlInsert = "INSERT INTO CLIENTE (DNI, NOMBRE) VALUES (?, ?)";
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTES SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ?, WHERE ID = ?");
@@ -179,5 +181,49 @@ public class GestorBD {
 		}
 		return updated;
 	}
-	// Falta el update cuentas
+	@SuppressWarnings("unused")
+	private boolean UpdateCuenta(Cuenta cuenta) {
+		boolean updated = false;
+		String sqlInsert = "INSERT INTO CLIENTE (DNI, NOMBRE) VALUES (?, ?)";
+		
+		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
+		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET NUMERO_CUENTA = ?, SALDO = ? WHERE ID = ?");
+		         PreparedStatement pstDeleteMovimientos = conn.prepareStatement("DELETE FROM MOVIMIENTO WHERE ID_CUENTA = ?");
+		         PreparedStatement pstInsertMovimientos = conn.prepareStatement("INSERT INTO MOVIMIENTO (ID_CUENTA, FECHA, CANTIDAD, CONCEPTO) VALUES (?, ?, ?, ?)")) {
+
+			pstUpdate.setString(1, cuenta.getNumeroCuenta());
+	        pstUpdate.setFloat(2, cuenta.getSaldo());
+	        
+			
+			if (pstUpdate.executeUpdate() == 1) {
+				pstDeleteMovimientos.setString(1, cuenta.getNumeroCuenta());
+				if (pstDeleteMovimientos.executeUpdate()>= 0) {
+					for (Movimiento mov : cuenta.getHistorial()) {
+	                    pstInsertMovimientos.setString(1, cuenta.getNumeroCuenta());
+	                    pstInsertMovimientos.setString(2, mov.getConcepto());
+	                    pstInsertMovimientos.setFloat(3, mov.getCantidad());
+	                    pstInsertMovimientos.setDate(4, new java.sql.Date(System.currentTimeMillis())); //Linea con ayuda de IA
+					
+					if (pstInsertMovimientos.executeUpdate() != 1) {
+						return false;
+						
+					}
+				}
+				}
+				else { 
+					return false;
+					
+				}
+				}
+		
+				updated = true;
+			
+			
+		} catch (Exception e) {
+			System.err.format("Error actualizando la cuenta '%s'", cuenta.getNumeroCuenta());
+			e.printStackTrace();
+			return false;
+		}
+		return updated;
+	}
 }

@@ -1,2 +1,5 @@
 Método para redimensionar los iconos:
 https://chatgpt.com/share/692b00a3-cd30-800d-8aac-24b8abb7c5a3
+
+como pongo la fecha actual en el campo de set date
+https://gemini.google.com/share/28a84656bccd
