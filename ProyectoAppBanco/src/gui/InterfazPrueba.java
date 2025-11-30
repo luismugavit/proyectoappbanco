@@ -490,7 +490,7 @@ public class InterfazPrueba extends JFrame{
 
      // Listener para el BOTÓN PRESTAMO
         btnPrestamo.addActionListener(e -> {
-            // 1. Validar que hay una cuenta seleccionada para ingresar el dinero
+            
             int filaSel = tablaCuentasC.getSelectedRow();
             if (filaSel == -1) {
                 JOptionPane.showMessageDialog(this, "Selecciona una cuenta para recibir el dinero.", "Atención", JOptionPane.WARNING_MESSAGE);
@@ -498,7 +498,7 @@ public class InterfazPrueba extends JFrame{
             }
             Cuenta cuentaDestino = cliente.getListaCuentas().get(filaSel);
 
-            // 2. Crear un panel con 3 campos para pedir los datos a la vez
+            
             JPanel panelInputs = new JPanel(new GridLayout(3, 2, 5, 5));
             
             JTextField txtCantidad = new JTextField();
@@ -512,10 +512,10 @@ public class InterfazPrueba extends JFrame{
             panelInputs.add(new JLabel("Plazo (meses):"));
             panelInputs.add(txtPlazo);
 
-            // 3. Mostrar la ventana
+            
             int result = JOptionPane.showConfirmDialog(null, panelInputs, "Solicitud de Préstamo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            // 4. Procesar la respuesta si dio OK
+            
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     double cantidad = Double.parseDouble(txtCantidad.getText());
@@ -531,7 +531,7 @@ public class InterfazPrueba extends JFrame{
                     boolean exito = cliente.solicitarPrestamo(cantidad, interes, meses, cuentaDestino);
 
                     if (exito) {
-                        // 5. Actualizar la Interfaz
+                        
                         modeloCuentas1.fireTableDataChanged(); // Refrescar tabla cuentas
                         modeloPrestamos.fireTableDataChanged();
                         saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Refrescar saldo

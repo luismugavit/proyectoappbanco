@@ -14,13 +14,13 @@ import domain.Prestamo;
 
 public class GestorBD {
 	private static final String FILE = "resources/db/banco.db";
-	private static final String CONNECTION_STRING = "jbdc:sqlite:" + FILE;
+	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			System.err.println("Error al cargar el driver de la BD");
+			System.err.println("Error al cargar el driver de la BD" + e.getMessage());
 		}
 	}
 	
