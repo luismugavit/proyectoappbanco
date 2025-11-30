@@ -808,10 +808,6 @@ public class InterfazPrueba extends JFrame{
 		if (lblCapitalTotal != null) lblCapitalTotal.setText(String.format("%,.2f €", dineroTotal));
 	}
 	
-	
-	
-	
-	
 	public JPanel tabTablaClientes() {
 		
 		JPanel panelTablaClientes = new JPanel(new BorderLayout());
@@ -861,6 +857,23 @@ public class InterfazPrueba extends JFrame{
 	public JPanel tabGrafica() {
 		JPanel panel = new JPanel(new BorderLayout());
 		
+		JPanel tituloPanel = new JPanel(new BorderLayout());
+		
+		
+		JLabel titulo = new JLabel("ACCIONESS DEUSTOBANK");
+		titulo.setFont(new Font("Arial", Font.BOLD, 20));
+		titulo.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		titulo.setForeground(Color.white);
+		
+		
+		
+		tituloPanel.add(titulo);
+		tituloPanel.setBackground(new Color(24, 5, 92));
+		tituloPanel.setOpaque(true);
+		tituloPanel.setPreferredSize(new Dimension(800,60));
+		
+		panel.add(tituloPanel, BorderLayout.NORTH);
 		panel.add(new GraficaAcciones());
 		return panel;
 	}
