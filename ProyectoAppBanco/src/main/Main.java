@@ -15,8 +15,9 @@ import gui.InterfazPrueba;
 
 public class Main {
 	
-	private static ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
-	private static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
+	public static ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
+	public static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
+	public static ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();
 
 	
 	public static void cargarClientes() {

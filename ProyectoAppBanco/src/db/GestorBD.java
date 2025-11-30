@@ -4,14 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-
 import domain.Cliente;
 import domain.Cuenta;
 import domain.Movimiento;
 import domain.Prestamo;
+import main.Main;
 
 public class GestorBD {
 	private static final String FILE = "resources/db/banco.db";
@@ -27,8 +25,8 @@ public class GestorBD {
 	
 	public ArrayList<Cliente> loadClientes() {
 		ArrayList<Cliente> clientes  = new ArrayList<>();
-		ArrayList<Cuenta> cuentas = loadCuentas();
-		ArrayList<Prestamo> prestamos = loadPrestamos();
+		ArrayList<Cuenta> cuentas = Main.listaCuentas;
+		ArrayList<Prestamo> prestamos = Main.listaPrestamos;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTES")) {
@@ -63,9 +61,10 @@ public class GestorBD {
 		return clientes;
 	}
 
+	@SuppressWarnings("unused")
 	private ArrayList<Prestamo> loadPrestamos() {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
-		ArrayList<Cliente> clientes  = loadClientes();
+		ArrayList<Cliente> clientes  = Main.listaClientes;
 		Cliente cliente = new Cliente(0, null, null, null, null, null, null);
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMOS")) {
@@ -92,9 +91,10 @@ public class GestorBD {
 		return prestamos;
 	}
 
+	@SuppressWarnings("unused")
 	private ArrayList<Cuenta> loadCuentas() {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
-		ArrayList<Cliente> clientes  = loadClientes();
+		ArrayList<Cliente> clientes  = Main.listaClientes;
 		Cliente cliente = new Cliente(0, null, null, null, null, null, null);
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTAS")) {
@@ -184,7 +184,6 @@ public class GestorBD {
 	@SuppressWarnings("unused")
 	private boolean UpdateCuenta(Cuenta cuenta) {
 		boolean updated = false;
-		String sqlInsert = "INSERT INTO CLIENTE (DNI, NOMBRE) VALUES (?, ?)";
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET NUMERO_CUENTA = ?, SALDO = ? WHERE ID = ?");
@@ -223,6 +222,26 @@ public class GestorBD {
 			System.err.format("Error actualizando la cuenta '%s'", cuenta.getNumeroCuenta());
 			e.printStackTrace();
 			return false;
+		}
+		return updated;
+	}
+	@SuppressWarnings("unused")
+	private boolean updatePrestamo(Prestamo prestamo) {
+		boolean updated = false;
+		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
+		     PreparedStatement pstUpdate = conn.prepareStatement("UPDATE PRESTAMO SET CANTIDAD_SOLICITADA = ?, INTERES_ANUAL = ?, PLAZO_MESES = ? WHERE ID = ?")){
+			 
+			 pstUpdate.setDouble(1, prestamo.getCantidadSolicitada());
+			 pstUpdate.setDouble(2, prestamo.getInteresAnual());
+			 pstUpdate.setInt(3, prestamo.getPlazoMeses());
+			 pstUpdate.setInt(4, prestamo.getId());
+			 
+			 if (pstUpdate.executeUpdate() == 1) {
+		            updated = true;
+		        }
+		}
+		catch(Exception e) {
+			System.err.format("Error actualizando el prestamo '%s'", prestamo.getId());
 		}
 		return updated;
 	}
