@@ -26,19 +26,17 @@ public class GestorBD {
 		ArrayList<Cliente> clientes  = new ArrayList<>();
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTE");
-		PreparedStatement pstCuentas = conn.prepareStatement("SELECT * FROM CLIENTE_CUENTA WHERE NUMERO_CUENTA = ?");
-		PreparedStatement pstPrestamos = conn.prepareStatement("SELECT * FROM CLIENTE_PRESTAMO WHERE ID_PRESTAMO = ?")) {
+		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTE")) {
 		ResultSet rsCliente = pstCliente.executeQuery();
 			
 		while (rsCliente.next()) {
 			int id = rsCliente.getInt("ID");
-			String nombre = rsCliente.getString("Nombre");
-			String apellido1 = rsCliente.getString("Apellido1");
-			String apellido2 = rsCliente.getString("Apellido2");
+			String nombre = rsCliente.getString("NOMBRE");
+			String apellido1 = rsCliente.getString("APELLIDO1");
+			String apellido2 = rsCliente.getString("APELLIDO2");
 			String dni = rsCliente.getString("DNI");
 			ArrayList<Cuenta> listacuentas = new ArrayList<Cuenta>();
-			ArrayList<Prestamo> listaPrestamos = new ArrayList<>();          
+			ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();          
 			Cliente cliente = new Cliente(id, nombre, apellido1, apellido2, dni, listacuentas, listaPrestamos);
 			clientes.add(cliente);
 		}
@@ -56,7 +54,7 @@ public class GestorBD {
 	private ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMOS")) {
+				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMO")) {
 				ResultSet rsPrestamo = pstPrestamo.executeQuery();
 				
 				while (rsPrestamo.next()) {
@@ -92,12 +90,12 @@ public class GestorBD {
 	private ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTAS")) {
+				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTA")) {
 				ResultSet rsCuenta = pstCuenta.executeQuery();
 					
 				while (rsCuenta.next()) {
-					String numeroCuenta= rsCuenta.getString("Numero");
-					float saldo = rsCuenta.getFloat("Saldo");
+					String numeroCuenta= rsCuenta.getString("NUMERO_CUENTA");
+					float saldo = rsCuenta.getFloat("SALDO");
 					int idCliente = rsCuenta.getInt("ID_CLIENTE");
 					Cliente cliente = null;
 					for (Cliente c : clientes) {
@@ -126,10 +124,10 @@ public class GestorBD {
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTES SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ?, WHERE ID = ?");
-			PreparedStatement pstDeleteCuentas = conn.prepareStatement( "DELETE FROM CLIENTES_CUENTAS WHERE ID_CLIENTE = ?" );
-			PreparedStatement pstDeletePrestamos = conn.prepareStatement("DELETE FROM CLIENTES_PRESTAMOS WHERE ID_CLIENTE = ?");
-			PreparedStatement pstInsertCuentas = conn.prepareStatement("INSERT INTO CLIENTE_CUENTA (ID_CLIENTE, ID_CUENTA) VALUES (?, ?)");
-			PreparedStatement pstInsertPrestamos = conn.prepareStatement("INSERT INTO CLIENTE_PRESTAMO (ID_CLIENTE, ID_PRESTAMO) VALUES (?, ?)")){
+			PreparedStatement pstDeleteCuentas = conn.prepareStatement( "DELETE FROM CUENTA WHERE ID_CLIENTE = ?" );
+			PreparedStatement pstDeletePrestamos = conn.prepareStatement("DELETE FROM PRESTAMO WHERE ID_CLIENTE = ?");
+			PreparedStatement pstInsertCuentas = conn.prepareStatement("INSERT INTO CUENTA (ID_CLIENTE, ID_CUENTA) VALUES (?, ?)");
+			PreparedStatement pstInsertPrestamos = conn.prepareStatement("INSERT INTO PRESTAMO (ID_CLIENTE, ID_PRESTAMO) VALUES (?, ?)")){
 
 			pstUpdate.setString(1, cliente.getNombre());
 			pstUpdate.setString(2, cliente.getApellido1());
