@@ -19,10 +19,11 @@ public class Main {
 	public static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	public static ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();
 
-	//Con csv
+	//Con csv para hacer pruebas
 	public static void cargarClientes() {
 		
 		File f = new File("src/db/db_clientes.csv");
+		
 		
 		try {
 			Scanner sc = new Scanner(f);
@@ -33,8 +34,8 @@ public class Main {
 					
 					int id = Integer.parseInt(campos[0]);
 					String name = campos[1];
-					String a1 = campos[2];
 					String a2 = campos[3];
+					String a1 = campos[2];
 					String dni = campos[4];
 					String[] cuentas = campos[5].split(",");
 					
