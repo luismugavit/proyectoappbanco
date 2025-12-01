@@ -25,11 +25,13 @@ public class GestorBD {
 	
 	public ArrayList<Cliente> loadClientes() {
 		ArrayList<Cliente> clientes  = new ArrayList<>();
-		ArrayList<Cuenta> cuentas = Main.listaCuentas;
-		ArrayList<Prestamo> prestamos = Main.listaPrestamos;
+		ArrayList<Cuenta> cuentas = loadCuentas();
+		ArrayList<Prestamo> prestamos = loadPrestamos();
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTES")) {
+		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTE");
+		PreparedStatement pstCuentas = conn.prepareStatement("SELECT * FROM CLIENTE_CUENTA WHERE NUMERO_CUENTA = ?");
+		PreparedStatement pstPrestamos = conn.prepareStatement("SELECT * FROM CLIENTE_PRESTAMO WHERE ID_PRESTAMO = ?")) {
 		ResultSet rsCliente = pstCliente.executeQuery();
 			
 		while (rsCliente.next()) {
@@ -62,10 +64,9 @@ public class GestorBD {
 	}
 
 	@SuppressWarnings("unused")
-	private ArrayList<Prestamo> loadPrestamos() {
+	private ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
-		ArrayList<Cliente> clientes  = Main.listaClientes;
-		Cliente cliente = new Cliente(0, null, null, null, null, null, null);
+		Cliente cliente = null;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMOS")) {
 				ResultSet rsPrestamo = pstPrestamo.executeQuery();
@@ -92,10 +93,9 @@ public class GestorBD {
 	}
 
 	@SuppressWarnings("unused")
-	private ArrayList<Cuenta> loadCuentas() {
+	private ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
-		ArrayList<Cliente> clientes  = Main.listaClientes;
-		Cliente cliente = new Cliente(0, null, null, null, null, null, null);
+		Cliente cliente = null;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTAS")) {
 				ResultSet rsCuenta = pstCuenta.executeQuery();
