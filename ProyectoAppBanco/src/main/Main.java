@@ -99,7 +99,7 @@ public class Main {
 			clientes[i].getListaCuentas().add(cuentas[i]);
 		}
 		cargarClientes();
-		
+		//prueba
 		//Con base de datos
 		DataInitializer inicializador = new DataInitializer();
         inicializador.InicializarBD();
