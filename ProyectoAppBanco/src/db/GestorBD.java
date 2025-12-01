@@ -10,7 +10,7 @@ import domain.Cuenta;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "resources/db/Banco.db";
+	private static final String FILE = "src/resources/Banco.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
@@ -192,6 +192,7 @@ public class GestorBD {
 				updated = true;
 			}
 		} catch (Exception e) {
+			
 			System.err.format("Error actualizando la cuenta '%s'", cuenta.getNumeroCuenta());
 			e.printStackTrace();
 			return false;
