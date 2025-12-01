@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import db.DataInitializer;
 import db.GestorBD;
 import domain.Cliente;
 import domain.Cuenta;
@@ -19,7 +20,7 @@ public class Main {
 	public static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	public static ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();
 
-	
+	//Con csv
 	public static void cargarClientes() {
 		
 		File f = new File("src/db/db_clientes.csv");
@@ -98,18 +99,22 @@ public class Main {
 		for(int i= 0; i<clientes.length; i++) {
 			clientes[i].getListaCuentas().add(cuentas[i]);
 		}
-		
-
 		cargarClientes();
+		
+		//Con base de datos
+		DataInitializer inicializador = new DataInitializer();
+        inicializador.InicializarBD();
 		GestorBD gestorBD = new GestorBD();
 		ArrayList<Cliente> listaClientesBD = gestorBD.loadClientes();
 		ArrayList<Cuenta> listaCuentasBD = gestorBD.loadCuentas(listaClientesBD);
 		
 		System.out.println(listaClientes.size());
+		//ventana csv
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
+		//ventana base de datos
 		//InterfazPrueba ventanaBD = new InterfazPrueba(listaClientesBD, listaCuentasBD);
 		ventana.setVisible(true);
-		
+		//ventanaBD.setVisible(true);
 		
 	}
 

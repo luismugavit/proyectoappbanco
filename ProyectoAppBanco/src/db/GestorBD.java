@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import domain.Cliente;
 import domain.Cuenta;
-import domain.Movimiento;
 import domain.Prestamo;
 
 public class GestorBD {
@@ -123,7 +122,7 @@ public class GestorBD {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTES SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ?, WHERE ID = ?");
+			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTE SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ?, WHERE ID = ?");
 			PreparedStatement pstDeleteCuentas = conn.prepareStatement( "DELETE FROM CUENTA WHERE ID_CLIENTE = ?" );
 			PreparedStatement pstDeletePrestamos = conn.prepareStatement("DELETE FROM PRESTAMO WHERE ID_CLIENTE = ?");
 			PreparedStatement pstInsertCuentas = conn.prepareStatement("INSERT INTO CUENTA (ID_CLIENTE, ID_CUENTA) VALUES (?, ?)");
