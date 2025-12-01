@@ -526,7 +526,7 @@ public class InterfazPrueba extends JFrame{
 	            cliente.setDni(txtDni.getText());
 
 	            
-	            boolean exito = gestorBD.UpdateCliente(cliente);
+	            boolean exito = GestorBD.UpdateCliente(cliente);
 
 	            if (exito) {
 	                JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente.");
