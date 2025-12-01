@@ -9,7 +9,6 @@ import domain.Cliente;
 import domain.Cuenta;
 import domain.Movimiento;
 import domain.Prestamo;
-import main.Main;
 
 public class GestorBD {
 	private static final String FILE = "resources/db/banco.db";
@@ -25,8 +24,6 @@ public class GestorBD {
 	
 	public ArrayList<Cliente> loadClientes() {
 		ArrayList<Cliente> clientes  = new ArrayList<>();
-		ArrayList<Cuenta> cuentas = loadCuentas();
-		ArrayList<Prestamo> prestamos = loadPrestamos();
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 		PreparedStatement pstCliente = conn.prepareStatement("SELECT * FROM CLIENTE");
@@ -41,32 +38,23 @@ public class GestorBD {
 			String apellido2 = rsCliente.getString("Apellido2");
 			String dni = rsCliente.getString("DNI");
 			ArrayList<Cuenta> listacuentas = new ArrayList<Cuenta>();
-			for (Cuenta c : cuentas) {
-                if (c.getPropietario().getId() == id) {
-                    listacuentas.add(c);
-                }
-            }
-
 			ArrayList<Prestamo> listaPrestamos = new ArrayList<>();          
-			for (Prestamo p : prestamos) {
-				if (p.getCliente().getId() == id) {
-			        listaPrestamos.add(p);
-				}
-			}
-			Cliente cliente = new Cliente(id, nombre, apellido1, apellido2, dni, listacuentas, prestamos);
+			Cliente cliente = new Cliente(id, nombre, apellido1, apellido2, dni, listacuentas, listaPrestamos);
 			clientes.add(cliente);
 		}
 		rsCliente.close();
+		conn.close();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
+		loadCuentas(clientes);
+		loadPrestamos(clientes);
 		return clientes;
 	}
 
 	@SuppressWarnings("unused")
 	private ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
-		Cliente cliente = null;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMOS")) {
 				ResultSet rsPrestamo = pstPrestamo.executeQuery();
@@ -76,15 +64,23 @@ public class GestorBD {
 					double interesAnual = rsPrestamo.getDouble("INTERES_ANUAL");
 					int plazoMeses = rsPrestamo.getInt("PLAZO_MESES");
 					int idCliente = rsPrestamo.getInt("ID_CLIENTE");
+					Cliente cliente = null;
 					for (Cliente c : clientes) {
 						if (c.getId() == idCliente ) {
 							cliente = c;
 							break;
 						}
 					}
+					if (cliente != null) {
+						
+					
 					Prestamo prestamo = new Prestamo(cliente, cantidadSolicitada, interesAnual, plazoMeses);
+					cliente.getPrestamos().add(prestamo);
 					prestamos.add(prestamo);
 				}
+				}
+				rsPrestamo.close();
+				conn.close();
 				}
 		catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -95,7 +91,6 @@ public class GestorBD {
 	@SuppressWarnings("unused")
 	private ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
-		Cliente cliente = null;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTAS")) {
 				ResultSet rsCuenta = pstCuenta.executeQuery();
@@ -104,17 +99,21 @@ public class GestorBD {
 					String numeroCuenta= rsCuenta.getString("Numero");
 					float saldo = rsCuenta.getFloat("Saldo");
 					int idCliente = rsCuenta.getInt("ID_CLIENTE");
+					Cliente cliente = null;
 					for (Cliente c : clientes) {
 						if (c.getId() == idCliente ) {
 							cliente = c;
 							break;
 						}
 					}
+					if (cliente != null) {
 					Cuenta cuenta = new Cuenta(numeroCuenta, saldo, cliente);
+					cliente.getListaCuentas().add(cuenta);
 					cuentas.add(cuenta);
-					
+					}
 				}
 				rsCuenta.close();
+				conn.close();
 				} catch (Exception e) {
 					System.err.println(e.getMessage());
 				}
