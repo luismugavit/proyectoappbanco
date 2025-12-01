@@ -118,7 +118,7 @@ public class GestorBD {
 	}
 	
 	@SuppressWarnings("unused")
-	public boolean UpdateCliente(Cliente cliente) {
+	public static boolean UpdateCliente(Cliente cliente) {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
