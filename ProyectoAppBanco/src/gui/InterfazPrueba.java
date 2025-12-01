@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
 
+import db.GestorBD;
 import domain.Cliente;
 import domain.Cuenta;
 import domain.Gasto;
@@ -61,6 +62,7 @@ public class InterfazPrueba extends JFrame{
 	private JScrollPane scroller;
 	private int filaSelec = -1;
 	private JLabel lblTotalClientes, lblTotalCuentas, lblCapitalTotal;
+
 	
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
@@ -70,7 +72,7 @@ public class InterfazPrueba extends JFrame{
 		setLocationRelativeTo(null);
 		this.listaClientes = listaClientes;
 		this.listaCuentas = listaCuenta;
-		
+
 		//Movimientos de prueba
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
@@ -480,15 +482,74 @@ public class InterfazPrueba extends JFrame{
 		info.add(tablaMovimientosCliente);
 		
 		
+		
+		
+		
 		panelVistaCliente.add(info);
 		panelVistaCliente.add(nombre, BorderLayout.NORTH);
 		
-// Ayuda de IA para algun apartado de prestamos
+		JButton btnModificar = new JButton("Modificar Datos");	    
+		panelBotonesCuenta.add(btnModificar);
+	    
+		// Listener para el BOTÓN MODIFICAR
+		
+	    btnModificar.addActionListener(e -> {
+	        
+	        JPanel panelEdicion = new JPanel(new GridLayout(4, 2, 5, 5));
+	        JTextField txtNombre = new JTextField(cliente.getNombre());
+	        JTextField txtAp1 = new JTextField(cliente.getApellido1());
+	        JTextField txtAp2 = new JTextField(cliente.getApellido2());
+	        JTextField txtDni = new JTextField(cliente.getDni());
+
+	        panelEdicion.add(new JLabel("Nombre:"));
+	        panelEdicion.add(txtNombre);
+	        panelEdicion.add(new JLabel("Apellido 1:"));
+	        panelEdicion.add(txtAp1);
+	        panelEdicion.add(new JLabel("Apellido 2:"));
+	        panelEdicion.add(txtAp2);
+	        panelEdicion.add(new JLabel("DNI:"));
+	        panelEdicion.add(txtDni);
+	        
+	        int resultado = JOptionPane.showConfirmDialog(this, panelEdicion, "Modificar Cliente", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+	        if (resultado == JOptionPane.OK_OPTION) {
+	            
+	            if (txtNombre.getText().isEmpty() || txtDni.getText().isEmpty()) {
+	                JOptionPane.showMessageDialog(this, "Nombre y DNI son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+	                return;
+	            }
+
+	            
+	            cliente.setNombre(txtNombre.getText());
+	            cliente.setApellido1(txtAp1.getText());
+	            cliente.setApellido2(txtAp2.getText());
+	            cliente.setDni(txtDni.getText());
+
+	            
+	            boolean exito = gestorBD.UpdateCliente(cliente);
+
+	            if (exito) {
+	                JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente.");
+	                
+	                
+	                nombre.setText((cliente.getNombre() + " " + cliente.getApellido1() + " " + cliente.getApellido2()).toUpperCase());
+	                modeloTabla.fireTableDataChanged(); 
+	                panelVistaCliente.revalidate();
+	                panelVistaCliente.repaint();
+	            } else {
+	                JOptionPane.showMessageDialog(this, "Error al actualizar en la base de datos.", "Error BD", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    });
+		
+		
+		
+		// Ayuda de IA para algun apartado de prestamos
         
         JButton btnPrestamo = new JButton("Solicitar Préstamo");
         panelBotonesCuenta.add(btnPrestamo); 
 
-     // Listener para el BOTÓN PRESTAMO
+        // Listener para el BOTÓN PRESTAMO
         btnPrestamo.addActionListener(e -> {
             
             int filaSel = tablaCuentasC.getSelectedRow();
@@ -513,10 +574,10 @@ public class InterfazPrueba extends JFrame{
             panelInputs.add(txtPlazo);
 
             
-            int result = JOptionPane.showConfirmDialog(null, panelInputs, "Solicitud de Préstamo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int resultado = JOptionPane.showConfirmDialog(null, panelInputs, "Solicitud de Préstamo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             
-            if (result == JOptionPane.OK_OPTION) {
+            if (resultado == JOptionPane.OK_OPTION) {
                 try {
                     double cantidad = Double.parseDouble(txtCantidad.getText());
                     double interes = Double.parseDouble(txtInteres.getText());
