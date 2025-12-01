@@ -3,10 +3,10 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
+import java.util.List;
 import java.util.Scanner;
 
-
+import db.GestorBD;
 import domain.Cliente;
 import domain.Cuenta;
 
@@ -69,19 +69,6 @@ public class Main {
 	
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-//		GestorBaseDatos db = new GestorBaseDatos();
-//
-//        // 1. Crear la tabla (solo la crea si no existe)
-//        db.inicializarBaseDatos();
-//
-//        // 2. Insertar algunos datos de prueba
-//        db.insertarCliente("Juan Perez", 1500.50);
-//        db.insertarCliente("Ana Gomez", 2300.00);
-//
-//        // 3. Leer y mostrar en consola
-//        System.out.println("Lista de clientes");
-//        db.leerClientes();
 		
 		Cliente[] clientes = {
 				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
@@ -114,8 +101,13 @@ public class Main {
 		
 
 		cargarClientes();
+		GestorBD gestorBD = new GestorBD();
+		ArrayList<Cliente> listaClientesBD = gestorBD.loadClientes();
+		ArrayList<Cuenta> listaCuentasBD = gestorBD.loadCuentas(listaClientesBD);
+		
 		System.out.println(listaClientes.size());
 		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
+		//InterfazPrueba ventanaBD = new InterfazPrueba(listaClientesBD, listaCuentasBD);
 		ventana.setVisible(true);
 		
 		

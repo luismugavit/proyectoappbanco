@@ -51,7 +51,7 @@ public class GestorBD {
 	}
 
 	@SuppressWarnings("unused")
-	private ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
+	public ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstPrestamo = conn.prepareStatement("SELECT * FROM PRESTAMO")) {
@@ -87,7 +87,7 @@ public class GestorBD {
 	}
 
 	@SuppressWarnings("unused")
-	private ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
+	public ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement pstCuenta = conn.prepareStatement("SELECT * FROM CUENTA")) {
@@ -119,7 +119,7 @@ public class GestorBD {
 	}
 	
 	@SuppressWarnings("unused")
-	private boolean UpdateCliente(Cliente cliente) {
+	public boolean UpdateCliente(Cliente cliente) {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
@@ -179,42 +179,19 @@ public class GestorBD {
 		return updated;
 	}
 	@SuppressWarnings("unused")
-	private boolean UpdateCuenta(Cuenta cuenta) {
+	public boolean UpdateCuenta(Cuenta cuenta) {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET NUMERO_CUENTA = ?, SALDO = ? WHERE ID = ?");
-		         PreparedStatement pstDeleteMovimientos = conn.prepareStatement("DELETE FROM MOVIMIENTO WHERE ID_CUENTA = ?");
-		         PreparedStatement pstInsertMovimientos = conn.prepareStatement("INSERT INTO MOVIMIENTO (ID_CUENTA, FECHA, CANTIDAD, CONCEPTO) VALUES (?, ?, ?, ?)")) {
+		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET NUMERO_CUENTA = ?, SALDO = ? WHERE ID = ?")) {
 
 			pstUpdate.setString(1, cuenta.getNumeroCuenta());
 	        pstUpdate.setFloat(2, cuenta.getSaldo());
 	        
 			
 			if (pstUpdate.executeUpdate() == 1) {
-				pstDeleteMovimientos.setString(1, cuenta.getNumeroCuenta());
-				if (pstDeleteMovimientos.executeUpdate()>= 0) {
-					for (Movimiento mov : cuenta.getHistorial()) {
-	                    pstInsertMovimientos.setString(1, cuenta.getNumeroCuenta());
-	                    pstInsertMovimientos.setString(2, mov.getConcepto());
-	                    pstInsertMovimientos.setFloat(3, mov.getCantidad());
-	                    pstInsertMovimientos.setDate(4, new java.sql.Date(System.currentTimeMillis())); //Linea con ayuda de IA
-					
-					if (pstInsertMovimientos.executeUpdate() != 1) {
-						return false;
-						
-					}
-				}
-				}
-				else { 
-					return false;
-					
-				}
-				}
-		
 				updated = true;
-			
-			
+			}
 		} catch (Exception e) {
 			System.err.format("Error actualizando la cuenta '%s'", cuenta.getNumeroCuenta());
 			e.printStackTrace();
@@ -223,7 +200,7 @@ public class GestorBD {
 		return updated;
 	}
 	@SuppressWarnings("unused")
-	private boolean updatePrestamo(Prestamo prestamo) {
+	public boolean updatePrestamo(Prestamo prestamo) {
 		boolean updated = false;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
 		     PreparedStatement pstUpdate = conn.prepareStatement("UPDATE PRESTAMO SET CANTIDAD_SOLICITADA = ?, INTERES_ANUAL = ?, PLAZO_MESES = ? WHERE ID = ?")){
@@ -239,6 +216,8 @@ public class GestorBD {
 		}
 		catch(Exception e) {
 			System.err.format("Error actualizando el prestamo '%s'", prestamo.getId());
+			e.printStackTrace();
+			return false;
 		}
 		return updated;
 	}
