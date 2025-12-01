@@ -3,7 +3,6 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import db.DataInitializer;
@@ -107,6 +106,7 @@ public class Main {
 		GestorBD gestorBD = new GestorBD();
 		ArrayList<Cliente> listaClientesBD = gestorBD.loadClientes();
 		ArrayList<Cuenta> listaCuentasBD = gestorBD.loadCuentas(listaClientesBD);
+		System.out.println(listaCuentasBD);
 		
 		System.out.println(listaClientes.size());
 		//ventana csv
