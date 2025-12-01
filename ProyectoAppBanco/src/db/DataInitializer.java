@@ -14,8 +14,8 @@ public class DataInitializer {
 		gestor.crearTablas();
 	
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		clientes.add(new Cliente("A", "A", "A", "B"));
-		clientes.add(new Cliente("B", "C", "A", "B"));
+		clientes.add(new Cliente("A", "A", "A", "A"));
+		clientes.add(new Cliente("B", "C", "A", "D"));
 		clientes.add(new Cliente("C", "A", "A", "B"));
 		clientes.add(new Cliente("D", "A", "B", "C"));
 		
