@@ -14,9 +14,15 @@ public class DataInitializer {
 		gestor.crearTablas();
 	
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+<<<<<<< HEAD
 		clientes.add(new Cliente("A", "A", "A", "B"));
 		clientes.add(new Cliente("B", "C", "A", "A"));
 		clientes.add(new Cliente("C", "A", "A", "D"));
+=======
+		clientes.add(new Cliente("A", "A", "A", "A"));
+		clientes.add(new Cliente("B", "C", "A", "D"));
+		clientes.add(new Cliente("C", "A", "A", "B"));
+>>>>>>> branch 'main' of https://github.com/luismugavit/ProyectoAppBanco.git
 		clientes.add(new Cliente("D", "A", "B", "C"));
 		
 		for (Cliente cliente : clientes) {
