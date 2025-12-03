@@ -15,8 +15,8 @@ public class DataInitializer {
 	
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 		clientes.add(new Cliente("A", "A", "A", "B"));
-		clientes.add(new Cliente("B", "C", "A", "B"));
-		clientes.add(new Cliente("C", "A", "A", "B"));
+		clientes.add(new Cliente("B", "C", "A", "A"));
+		clientes.add(new Cliente("C", "A", "A", "D"));
 		clientes.add(new Cliente("D", "A", "B", "C"));
 		
 		for (Cliente cliente : clientes) {

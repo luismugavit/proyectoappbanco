@@ -111,12 +111,11 @@ public class Main {
 		
 		System.out.println(listaClientes.size());
 		//ventana csv
-		InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
+		//InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 		//ventana base de datos
-		//InterfazPrueba ventanaBD = new InterfazPrueba(listaClientesBD, listaCuentasBD);
-		ventana.setVisible(true);
-		//ventanaBD.setVisible(true);
-		
+		InterfazPrueba ventanaBD = new InterfazPrueba(listaClientesBD, listaCuentasBD);
+		//ventana.setVisible(true);
+		ventanaBD.setVisible(true);
 	}
 
 }

@@ -6,6 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="ProyectoAppBanco/src"/>
-	<classpathentry kind="lib" path="ProyectoAppBanco/src/resources/Banco.db"/>
+	<classpathentry kind="lib" path="ProyectoAppBanco/lib/slf4j-simple-2.0.16.jar"/>
+	<classpathentry kind="lib" path="ProyectoAppBanco/lib/slf4j-api-2.0.16.jar"/>
+	<classpathentry kind="lib" path="ProyectoAppBanco/lib/sqlite-jdbc-3.47.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

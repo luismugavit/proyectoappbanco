@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Cliente {
 
 	private int id;
-	private static int cod = 0;
+	private int cod = 0;
 	private String nombre;
 	private String apellido1;
 	private String apellido2;

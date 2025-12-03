@@ -10,7 +10,7 @@ import domain.Cuenta;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "src/resources/Banco.db";
+	private static final String FILE = "ProyectoAppBanco/src/resources/Banco.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
@@ -37,6 +37,7 @@ public class GestorBD {
 			ArrayList<Cuenta> listacuentas = new ArrayList<Cuenta>();
 			ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();          
 			Cliente cliente = new Cliente(id, nombre, apellido1, apellido2, dni, listacuentas, listaPrestamos);
+			cliente.setId(id);
 			clientes.add(cliente);
 		}
 		rsCliente.close();
@@ -85,7 +86,7 @@ public class GestorBD {
 		return prestamos;
 	}
 
-	@SuppressWarnings("unused")
+
 	public ArrayList<Cuenta> loadCuentas(ArrayList<Cliente> clientes) {
 		ArrayList<Cuenta> cuentas = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
