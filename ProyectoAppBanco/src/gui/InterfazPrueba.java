@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -123,12 +124,15 @@ public class InterfazPrueba extends JFrame{
 	
 	public void crearTablaClientes(ArrayList<Cliente> listaClientes) {
 		
+		
+		
+		
 		modeloTabla = new ModelTablaClientes(listaClientes);
 		tablaClientes = new JTable(modeloTabla);
-		tablaClientes.setRowHeight(20);
+		tablaClientes.setRowHeight(24);
 		tablaClientes.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(270);
+		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(150);
+		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(258);
 		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
 		
 		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
@@ -137,6 +141,7 @@ public class InterfazPrueba extends JFrame{
 			
 			if (value instanceof String) {
 				result.setText(value.toString());
+				
 			}else {
 				result.setText(String.valueOf(value));
 //				if(value instanceof Float){
@@ -150,7 +155,7 @@ public class InterfazPrueba extends JFrame{
 //				}
 			}
 			
-			
+			result.setFont(new Font("Arial", Font.PLAIN, 14));
 			result.setHorizontalAlignment(SwingConstants.CENTER);
 			
 			if(row % 2 == 0) {
@@ -871,27 +876,43 @@ public class InterfazPrueba extends JFrame{
 	
 	public JPanel tabTablaClientes() {
 		
+		
+		JPanel pTitulo = new JPanel(new BorderLayout());
+		pTitulo.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pTitulo.setPreferredSize(new Dimension(800, 40));
+		
+		JLabel titulo = new JLabel(" CLIENTES DEUSTOBANK "); 
+		titulo.setFont(new Font("Arial", Font.BOLD, 18));
+		titulo.setForeground(Color.WHITE);
+		
+		JLabel numClientes = new JLabel(" Nº de Clientes: " + listaClientes.size()+ "   "); 
+		numClientes.setFont(new Font("Arial", Font.PLAIN, 18));
+		numClientes.setForeground(Color.WHITE);
+		
+		pTitulo.add(numClientes, BorderLayout.EAST);
+		pTitulo.add(titulo, BorderLayout.WEST);
+		
 		JPanel panelTablaClientes = new JPanel(new BorderLayout());
 		
 		crearTablaClientes(listaClientes);
-		JPanel panelBotones = new JPanel();
+		JPanel panelBotones = new JPanel(new FlowLayout());
 		
 		//Image imagen = ((ImageIcon) icono).getImage().getScaledInstance(40, 50, Image.SCALE_DEFAULT);
 		
 		
-		Icon icono2 = redimensionarIconoHQ("src/resources/addUser.png", 60, 80);
+		Icon icono2 = redimensionarIconoHQ("src/resources/addUser.png", 40, 40);
 		
 		JButton botonAddCliente = new JButton(icono2);
 		//botonAddCliente.setIcon(new ImageIcon());
 		botonAddCliente.setOpaque(true);
-		
+		botonAddCliente.setBackground(new Color(235, 238, 255));
 		botonAddCliente.addActionListener(e -> card.show(panelCont, "crearCliente") );
 		panelBotones.add(botonAddCliente);
 		
 		
-
+		panelTablaClientes.add(pTitulo, BorderLayout.NORTH);
 		panelTablaClientes.add(scroller);
-		panelTablaClientes.add(panelBotones, BorderLayout.WEST);
+		panelTablaClientes.add(panelBotones, BorderLayout.SOUTH);
 		
 		
 		

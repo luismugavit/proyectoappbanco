@@ -10,7 +10,7 @@ import domain.Cuenta;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "ProyectoAppBanco/src/resources/Banco.db";
+	private static final String FILE = "src/resources/Banco.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
