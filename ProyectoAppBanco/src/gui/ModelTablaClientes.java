@@ -19,6 +19,7 @@ public class ModelTablaClientes extends AbstractTableModel{
 		this.clientes = clientes;
 	}
 	
+	
 
 	@Override
 	public int getRowCount() {
@@ -58,6 +59,7 @@ public class ModelTablaClientes extends AbstractTableModel{
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return false;
 	}
+	
 	
 	public void addCliente(Cliente cliente) {
         clientes.add(cliente);

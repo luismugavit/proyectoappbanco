@@ -35,6 +35,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellRenderer;
 
 import db.GestorBD;
@@ -63,7 +65,8 @@ public class InterfazPrueba extends JFrame{
 	private JScrollPane scroller;
 	private int filaSelec = -1;
 	private JLabel lblTotalClientes, lblTotalCuentas, lblCapitalTotal;
-
+	private JLabel numeroClientes;
+	private JTextField txtFiltro;
 	
 	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
 		
@@ -73,7 +76,8 @@ public class InterfazPrueba extends JFrame{
 		setLocationRelativeTo(null);
 		this.listaClientes = listaClientes;
 		this.listaCuentas = listaCuenta;
-
+		
+		
 		//Movimientos de prueba
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
@@ -208,6 +212,7 @@ public class InterfazPrueba extends JFrame{
 		
 		tablaClientes.addMouseListener(mouseAdapter);
 		scroller = new JScrollPane(tablaClientes);
+		scroller.setBorder(BorderFactory.createEmptyBorder());
 
 		
 	}
@@ -288,128 +293,54 @@ public class InterfazPrueba extends JFrame{
 	}
 	
 	public JPanel tabCliente(int fila) {
+		
 		JPanel panelVistaCliente = new JPanel(new BorderLayout());
 		Cliente cliente = listaClientes.get(fila);
-
-		JLabel nombre = new JLabel((cliente.getNombre()+ " "+ cliente.getApellido1()+" "+cliente.getApellido2()).toUpperCase() );
+		
+		
+		//TITULO NOMBRE CLIENTE
+		JPanel pNombre = new JPanel(new BorderLayout());
+		pNombre.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pNombre.setPreferredSize(new Dimension(800, 40));
+		pNombre.setOpaque(true);
+		
+		JLabel nombre = new JLabel("  "+cliente.getApellido1() + " " +cliente.getApellido2() + ", " + cliente.getNombre() ); 
 		nombre.setFont(new Font("Arial", Font.BOLD, 18));
+		nombre.setForeground(Color.WHITE);
+		
+		
+		pNombre.add(nombre);
+		panelVistaCliente.add(pNombre, BorderLayout.NORTH);
 
 
-		JPanel info = new JPanel(new GridLayout(0,2,10,10));
+		JPanel info = new JPanel(new GridLayout(2,3,10,10));
 
-		JLabel saldoTotal = new JLabel("Saldo Total: " + cliente.getSaldoTotal() + " euros", JLabel.CENTER);
-		saldoTotal.setFont(new Font("Arial", Font.BOLD, 18));
-		saldoTotal.setBackground(Color.LIGHT_GRAY);
-		saldoTotal.setOpaque(true);
-		info.add(saldoTotal);
+		//PANEL SALDO TOTAL
+		JPanel panelSaldoTotal = new JPanel(new BorderLayout());
+		
+		JLabel labelSaldo = new JLabel(" SALDO TOTAL: "); 
+		labelSaldo.setFont(new Font("Arial", Font.BOLD, 20));
+		
+		JLabel saldoTotal = new JLabel(cliente.getSaldoTotal() + " €", JLabel.CENTER);
+		saldoTotal.setFont(new Font("Arial", Font.BOLD, 24));
+		saldoTotal.setForeground(new Color(24, 5, 92));
+		
+		
+		panelSaldoTotal.add(labelSaldo, BorderLayout.NORTH);
+		panelSaldoTotal.add(saldoTotal);
+		
+		
+		info.add(panelSaldoTotal);
 
-		JLabel deudaTotal = new JLabel("Deuda Total: " + cliente.getDeudaTotal() + " euros", JLabel.CENTER);
-		deudaTotal.setFont(new Font("Arial", Font.BOLD, 16));
-		deudaTotal.setBackground(Color.RED);
-		deudaTotal.setOpaque(true);
 		
-		ModeloTablaPrestamos modeloPrestamos = new ModeloTablaPrestamos(cliente.getPrestamos());
-		JTable tablaPrestamos = new JTable(modeloPrestamos);
-		JScrollPane scrollPrestamos = new JScrollPane(tablaPrestamos);
-		scrollPrestamos.setBorder(BorderFactory.createTitledBorder("Préstamos Activos"));
-	
+		
+		
+		
+		
 
-		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
 		
-		
-		
-		ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
-		JTable tablaCuentasC = new JTable(modeloCuentas1);
-		
-		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
-			
-			JLabel result = new JLabel();
-			
-			
-			
-			
-			if (value instanceof String) {
-				result.setText(value.toString());
-			}else {
-				result.setText(String.valueOf(value));
-			
-			}
-			
-			
-			result.setHorizontalAlignment(SwingConstants.CENTER);
-			
-			if(row % 2 == 0) {
-				result.setBackground(new Color(235, 238, 255));
-			}else {
-				result.setBackground(Color.WHITE);
-			}
-			
-			if(row == filaSelec) {
-				result.setBackground(new Color(155, 129, 248));
-			}
-			
-			
-			
-			result.setOpaque(true);
-			return result;
-			
-			
-		};
-		
-		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
-			JLabel result = new JLabel();
-			
-			result.setText(value.toString());
-			result.setHorizontalAlignment(SwingConstants.CENTER);
-			result.setBackground(new Color(24, 5, 92));
-			result.setForeground(Color.white);
-			result.setOpaque(true);
-			result.setFont(new Font("Arial", Font.BOLD, 14));
-			return result;
-			
-			
-		};
-		tablaCuentasC.setDefaultRenderer(Object.class, renderer);
-		tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
-		
-		JButton btnAddCuenta = new JButton("Nueva cuenta");
-		
-		
-		tablaCuentasC.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				filaSelec = tablaCuentasC.rowAtPoint(e.getPoint());
-				tablaCuentasC.repaint();
-			}
-		});
-		
-		
-		
-		btnAddCuenta.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Cuenta newCuenta = new Cuenta(cliente);
-				cliente.addCuenta(newCuenta);
-				listaCuentas.add(newCuenta);
-				System.out.println(listaCuentas.getLast().getNumeroCuenta());
-				JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
-				tablaCuentasC.repaint();
-				tablaCuentas.repaint();
-				modeloTablaCuentas.fireTableDataChanged();
-			}
-		});
-		
-//		JScrollPane scroll = new JScrollPane(tablaCuentasC);
-		
-		panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
-		panelTablaCuentas.add(tablaCuentasC);
-		panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
 
-		info.add(panelTablaCuentas);
-
-		//info.add(new JLabel("Informacion sobre movimientos (gastos/ingresos) y transacciones"));
+		//PANEL TABLA MOVIMIENTOS DEL CLIENTE
 		
 		ArrayList<Movimiento> listaMovimientos = new ArrayList<Movimiento>();
 		for(Movimiento mov : registroMovimientos) {
@@ -464,34 +395,147 @@ public class InterfazPrueba extends JFrame{
 		tablaMovimientosCliente.setDefaultRenderer(Object.class, rendererMovs);
 		
 		
+		info.add(tablaMovimientosCliente);
 		
 		
 		
 		
-		
-		// Panel de botones de Operaciones
+		// PANEL BOTONES DE OPERACIONES
 
 		JPanel panelBotonesCuenta = new JPanel();
 		JButton btnIngresar = new JButton("Ingresar");
 		JButton btnGastar = new JButton("Gastar");
 		JButton btnSimular = new JButton("Simular Inversión");
 
-		// JButton btnTransferir = new JButton("Transferir");
+			// JButton btnTransferir = new JButton("Transferir");
 
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
 		panelBotonesCuenta.add(btnSimular);
+		
 		info.add(panelBotonesCuenta);
+		
+		
+		//PANEL TABLA CUENTAS DEL CLIENTE
+		
+				JPanel panelTablaCuentas = new JPanel(new BorderLayout());
+				
+				
+				
+				ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
+				JTable tablaCuentasC = new JTable(modeloCuentas1);
+				
+				TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+					
+					JLabel result = new JLabel();
+					
+					
+					if (value instanceof String) {
+						result.setText(value.toString());
+					}else {
+						result.setText(String.valueOf(value));
+					
+					}
+					
+					
+					result.setHorizontalAlignment(SwingConstants.CENTER);
+					
+					if(row % 2 == 0) {
+						result.setBackground(new Color(235, 238, 255));
+					}else {
+						result.setBackground(Color.WHITE);
+					}
+					
+					if(row == filaSelec) {
+						result.setBackground(new Color(155, 129, 248));
+					}
+					
+					
+					
+					result.setOpaque(true);
+					return result;
+					
+					
+				};
+				
+				TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
+					JLabel result = new JLabel();
+					
+					result.setText(value.toString());
+					result.setHorizontalAlignment(SwingConstants.CENTER);
+					result.setBackground(new Color(24, 5, 92));
+					result.setForeground(Color.white);
+					result.setOpaque(true);
+					result.setFont(new Font("Arial", Font.BOLD, 14));
+					return result;
+					
+					
+				};
+				tablaCuentasC.setDefaultRenderer(Object.class, renderer);
+				tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
+				
+				JButton btnAddCuenta = new JButton("Nueva cuenta");
+				
+				
+				tablaCuentasC.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						// TODO Auto-generated method stub
+						filaSelec = tablaCuentasC.rowAtPoint(e.getPoint());
+						tablaCuentasC.repaint();
+					}
+				});
+				
+				
+				
+				btnAddCuenta.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Cuenta newCuenta = new Cuenta(cliente);
+						cliente.addCuenta(newCuenta);
+						listaCuentas.add(newCuenta);
+						System.out.println(listaCuentas.getLast().getNumeroCuenta());
+						JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
+						tablaCuentasC.repaint();
+						tablaCuentas.repaint();
+						modeloTablaCuentas.fireTableDataChanged();
+					}
+				});
+				
+//				JScrollPane scroll = new JScrollPane(tablaCuentasC);
+				
+				panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
+				panelTablaCuentas.add(tablaCuentasC);
+				panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
+
+				info.add(panelTablaCuentas);
+		//PANEL PRESTAMOS
+		
+		
+		JLabel deudaTotal = new JLabel("Deuda Total: " + cliente.getDeudaTotal() + " euros", JLabel.CENTER);
+		deudaTotal.setFont(new Font("Arial", Font.BOLD, 16));
+		deudaTotal.setBackground(Color.RED);
+		deudaTotal.setOpaque(true);
+		
+		ModeloTablaPrestamos modeloPrestamos = new ModeloTablaPrestamos(cliente.getPrestamos());
+		JTable tablaPrestamos = new JTable(modeloPrestamos);
+		JScrollPane scrollPrestamos = new JScrollPane(tablaPrestamos);
+		scrollPrestamos.setBorder(BorderFactory.createTitledBorder("Préstamos Activos"));
+	
+		
 		info.add(scrollPrestamos);
 		
-		info.add(tablaMovimientosCliente);
+		
+		
+		
 		
 		
 		
 		
 		
 		panelVistaCliente.add(info);
-		panelVistaCliente.add(nombre, BorderLayout.NORTH);
+		
 		
 		JButton btnModificar = new JButton("Modificar Datos");	    
 		panelBotonesCuenta.add(btnModificar);
@@ -549,7 +593,7 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		
-		// Ayuda de IA para algun apartado de prestamos
+	
         
         JButton btnPrestamo = new JButton("Solicitar Préstamo");
         panelBotonesCuenta.add(btnPrestamo); 
@@ -634,7 +678,7 @@ public class InterfazPrueba extends JFrame{
 				cuentaSeleccionada.ingreso(cantidad, concepto); //Llama al método de Cuenta
 				// Refrescar la tabla de cuentas y el saldo total
 				modeloCuentas1.fireTableDataChanged(); //fireTableDataChanged: indica que el contenido ha cambiado y tiene que redibujarse 
-				saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Actualiza el saldo
+				saldoTotal.setText(cliente.getSaldoTotal() + " €"); // Actualiza el saldo
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -709,31 +753,81 @@ public class InterfazPrueba extends JFrame{
 	public JPanel tabCrearCliente() {
 		
 		JPanel addClientePanel = new JPanel(new BorderLayout());
+		
+		JPanel ptituloCrearCliente = new JPanel(new BorderLayout());
+		ptituloCrearCliente.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		ptituloCrearCliente.setPreferredSize(new Dimension(800, 40));
+		
+		JLabel titulo = new JLabel(" INTRODUZCA DATOS DEL NUEVO CLIENTE "); 
+		titulo.setHorizontalAlignment(SwingConstants.CENTER);
+		titulo.setFont(new Font("Arial", Font.PLAIN, 22));
+		titulo.setForeground(Color.WHITE);
+		ptituloCrearCliente.add(titulo);
+		
 		//Contenido del Panel
-		addClientePanel.add(new JLabel("Add cliente", JLabel.CENTER), BorderLayout.NORTH);
-		JPanel camposTextoPanel = new JPanel(new GridLayout(4, 2, 1,60));
+		addClientePanel.add(ptituloCrearCliente, BorderLayout.NORTH);
+		JPanel camposTextoPanel = new JPanel(new GridLayout(4, 1, 10,10));
+		
+		
 		JTextField campoNombre = new JTextField();
 		JTextField campoApellido1 = new JTextField();
 		JTextField campoApellido2 = new JTextField();
 		JTextField campoDNI = new JTextField();
-		campoNombre.setMaximumSize(new Dimension(15,5));;
-		camposTextoPanel.add(new JLabel("Nombre", JLabel.CENTER));
-		camposTextoPanel.add(campoNombre);
-		camposTextoPanel.add(new JLabel("Apellido_1", JLabel.CENTER));
-		camposTextoPanel.add(campoApellido1);
-		camposTextoPanel.add(new JLabel("Apellido_2", JLabel.CENTER));
-		camposTextoPanel.add(campoApellido2);
-		camposTextoPanel.add(new JLabel("DNI", JLabel.CENTER));
-		camposTextoPanel.add(campoDNI);
 		
-		addClientePanel.add(camposTextoPanel);
+		
+		// Panel Nombre
+		JPanel panelNombre = new JPanel(new BorderLayout());
+		panelNombre.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createTitledBorder("Nombre"),
+		        BorderFactory.createEmptyBorder(10, 15, 15, 15) // top, left, bottom, right
+		));
+		panelNombre.add(campoNombre, BorderLayout.CENTER);
+
+		// Panel Apellido 1
+		JPanel panelApellido1 = new JPanel(new BorderLayout());
+		panelApellido1.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createTitledBorder("Apellido 1"),
+		        BorderFactory.createEmptyBorder(10, 15, 15, 15)
+		));
+		panelApellido1.add(campoApellido1, BorderLayout.CENTER);
+
+		// Panel Apellido 2
+		JPanel panelApellido2 = new JPanel(new BorderLayout());
+		panelApellido2.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createTitledBorder("Apellido 2"),
+		        BorderFactory.createEmptyBorder(10, 15, 15, 15)
+		));
+		panelApellido2.add(campoApellido2, BorderLayout.CENTER);
+
+		// Panel DNI
+		JPanel panelDNI = new JPanel(new BorderLayout());
+		panelDNI.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createTitledBorder("DNI"),
+		        BorderFactory.createEmptyBorder(10, 15, 15, 15)
+		));
+		panelDNI.add(campoDNI, BorderLayout.CENTER);
+		
+		
+        camposTextoPanel.add(panelNombre);
+        camposTextoPanel.add(panelApellido1);
+        camposTextoPanel.add(panelApellido2);
+        camposTextoPanel.add(panelDNI);
+		
+		
 		camposTextoPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		addClientePanel.add(camposTextoPanel);
 		
 		JPanel botones = new JPanel();
 		
-		JButton botonCrearCliente = new JButton("Crear Cliente");
+		JButton botonCrearCliente = new JButton("CREAR CLIENTE");
+		botonCrearCliente.setOpaque(true);
+		botonCrearCliente.setFont(new Font("Arial", Font.BOLD, 16));
+		botonCrearCliente.setForeground(Color.black);
+		botonCrearCliente.setBackground(new Color(235, 238, 255));
+		
+		botonCrearCliente.setPreferredSize(new Dimension(640,40));
 		botones.add(botonCrearCliente);
-		addClientePanel.add(botones, BorderLayout.SOUTH);
+		addClientePanel.add(botonCrearCliente, BorderLayout.SOUTH);
 		
 		botonCrearCliente.addActionListener(e -> {
 			String nombreNuevoCliente = campoNombre.getText();
@@ -743,7 +837,8 @@ public class InterfazPrueba extends JFrame{
 			Cliente newCliente = new Cliente(nombreNuevoCliente, apellido1NuevoCliente, apellido2NuevoCliente, dniNuevoCliente);
 			listaClientes.add(newCliente);
 			modeloTabla.fireTableDataChanged();
-		
+			actualizarDashboard();
+			tablaClientes.repaint();
 			JOptionPane.showMessageDialog(null, "El cliente se ha añadido con éxito.", "Cliente añadido", JOptionPane.INFORMATION_MESSAGE);
 		});
 		
@@ -872,6 +967,8 @@ public class InterfazPrueba extends JFrame{
 		if (lblTotalClientes != null) lblTotalClientes.setText(String.valueOf(numClientes));
 		if (lblTotalCuentas != null) lblTotalCuentas.setText(String.valueOf(numCuentas));
 		if (lblCapitalTotal != null) lblCapitalTotal.setText(String.format("%,.2f €", dineroTotal));
+		if (numeroClientes != null) numeroClientes.setText(" Nº de Clientes: " + listaClientes.size() + "   ");
+
 	}
 	
 	public JPanel tabTablaClientes() {
@@ -885,11 +982,45 @@ public class InterfazPrueba extends JFrame{
 		titulo.setFont(new Font("Arial", Font.BOLD, 18));
 		titulo.setForeground(Color.WHITE);
 		
-		JLabel numClientes = new JLabel(" Nº de Clientes: " + listaClientes.size()+ "   "); 
-		numClientes.setFont(new Font("Arial", Font.PLAIN, 18));
-		numClientes.setForeground(Color.WHITE);
+		JPanel panelFiltro = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		panelFiltro.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		panelFiltro.setPreferredSize(new Dimension(400, 50));
+		panelFiltro.setBackground(new Color(235, 238, 255));
+		JLabel filtroTitulo = new JLabel("Búsqueda por nombre");
 		
-		pTitulo.add(numClientes, BorderLayout.EAST);
+		txtFiltro = new JTextField(20);
+		
+		
+		txtFiltro.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				filtrarClientes();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				filtrarClientes();
+				tablaClientes.repaint();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		panelFiltro.add(filtroTitulo);
+		panelFiltro.add(txtFiltro);
+		
+		numeroClientes = new JLabel(" Nº de Clientes: " + listaClientes.size() + "   "); 
+		numeroClientes.setFont(new Font("Arial", Font.PLAIN, 18));
+		numeroClientes.setForeground(Color.WHITE);
+		
+		pTitulo.add(numeroClientes, BorderLayout.EAST);
 		pTitulo.add(titulo, BorderLayout.WEST);
 		
 		JPanel panelTablaClientes = new JPanel(new BorderLayout());
@@ -901,14 +1032,30 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		Icon icono2 = redimensionarIconoHQ("src/resources/addUser.png", 40, 40);
+		Icon icono1 = redimensionarIconoHQ("src/resources/sortasc.png", 40, 40);
 		
 		JButton botonAddCliente = new JButton(icono2);
 		//botonAddCliente.setIcon(new ImageIcon());
 		botonAddCliente.setOpaque(true);
 		botonAddCliente.setBackground(new Color(235, 238, 255));
 		botonAddCliente.addActionListener(e -> card.show(panelCont, "crearCliente") );
-		panelBotones.add(botonAddCliente);
 		
+		
+		JButton botonSort = new JButton(icono1);
+		botonSort.setBackground(new Color(235, 238, 255));
+		botonSort.addActionListener(e -> {
+			ordenarPorSaldoRecursivo(listaClientes, listaClientes.size());
+			tablaClientes.repaint();
+		});
+		
+		botonAddCliente.setOpaque(true);
+		
+		
+		
+		
+		panelBotones.add(botonSort);
+		panelBotones.add(botonAddCliente);
+		panelBotones.add(panelFiltro);
 		
 		panelTablaClientes.add(pTitulo, BorderLayout.NORTH);
 		panelTablaClientes.add(scroller);
@@ -922,6 +1069,17 @@ public class InterfazPrueba extends JFrame{
 	public JPanel tabTablaCuentas() {
 		JPanel panelTablaCuentas = new JPanel(new BorderLayout());
 		
+		JPanel pTitulo = new JPanel(new BorderLayout());
+		pTitulo.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pTitulo.setPreferredSize(new Dimension(800, 40));
+		
+		JLabel titulo = new JLabel(" CUENTAS DEUSTOBANK "); 
+		titulo.setFont(new Font("Arial", Font.BOLD, 18));
+		titulo.setForeground(Color.WHITE);
+		
+		pTitulo.add(titulo);
+		panelTablaCuentas.add(pTitulo, BorderLayout.NORTH);
+		
 		crearTablaCuentas(listaCuentas);
 		JPanel panelBotones = new JPanel();
 		JButton botonAddCuenta = new JButton("Añadir Cuenta");
@@ -930,7 +1088,7 @@ public class InterfazPrueba extends JFrame{
 		panelBotones.add(botonAddCuenta);
 		
 		panelTablaCuentas.add(scroller);
-		panelTablaCuentas.add(panelBotones, BorderLayout.WEST);
+		panelTablaCuentas.add(panelBotones, BorderLayout.SOUTH);
 
 		
 		return panelTablaCuentas;
@@ -1029,5 +1187,46 @@ public class InterfazPrueba extends JFrame{
 		
 		
 	}
-
+	
+	
+	public static void ordenarPorSaldoRecursivo(ArrayList<Cliente> lista, int n) {
+		
+		if(n <= 1) {
+			System.out.println("Ordenada");
+		}else {
+			
+			for(int i = 0 ; i < n; i ++) {
+				if(i+1 < lista.size()-1) {
+					if(lista.get(i).getSaldoTotal() < lista.get(i+1).getSaldoTotal()) {
+						Cliente auxiliar = lista.get(i);
+						lista.set(i, lista.get(i+1));
+						lista.set(i+1, auxiliar);
+						
+					}
+				}
+				
+			}
+			
+			ordenarPorSaldoRecursivo(lista, n-1);
+		}
+		
+	}
+	
+	public void filtrarClientes() {
+		
+		ArrayList<Cliente> listafiltro = new ArrayList<Cliente>();
+		for(Cliente cl: listaClientes) {
+			if(cl.getNombre().contains(txtFiltro.getText())) {
+				listafiltro.add(cl);
+			};
+			
+		}
+		
+		ModelTablaClientes modeloFiltro = new ModelTablaClientes(listafiltro);
+		tablaClientes.setModel(modeloFiltro);
+		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(150);
+		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(258);
+		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
+		
+	}
 }
