@@ -15,10 +15,10 @@ public class DataInitializer {
 		gestor.crearTablas();
 
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		clientes.add(new Cliente("A", "A", "A", "B"));
-		clientes.add(new Cliente("B", "C", "A", "A"));
-		clientes.add(new Cliente("C", "A", "A", "D"));
-		clientes.add(new Cliente("D", "A", "B", "C"));
+		clientes.add(new Cliente("Ramon", "Garcia", "Collado", "1000000A"));
+		clientes.add(new Cliente("Roberto", "Zulueta", "Martinez", "1000000B"));
+		clientes.add(new Cliente("Carlos", "Gil", "Gil", "1000000C"));
+		clientes.add(new Cliente("Diana", "Garcia", "Rodriguez", "1000000D"));
 
 		for (Cliente cliente : clientes) {
 		    gestor.insertCliente(cliente);

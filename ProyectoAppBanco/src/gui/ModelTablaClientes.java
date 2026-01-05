@@ -50,7 +50,7 @@ public class ModelTablaClientes extends AbstractTableModel{
 		if(columnIndex == 0) {
 			return cliente.getId();
 		}else if (columnIndex == 1) {
-			return cliente.getNombre();
+			return cliente.getNombre() + " " + cliente.getApellido1() + " "+ cliente.getApellido2();
 		}else {
 			return cliente.getSaldoTotal();
 		}

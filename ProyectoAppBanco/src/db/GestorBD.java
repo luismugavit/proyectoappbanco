@@ -10,7 +10,7 @@ import domain.Cuenta;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "src/resources/Banco.db";
+	private static final String FILE = "src/resources/Banco1.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
@@ -220,6 +220,38 @@ public class GestorBD {
 			e.printStackTrace();
 			return false;
 		}
+		return updated;
+	}
+	
+	
+	public boolean insertarClientesEnBD(Cliente cliente) {
+		boolean updated = false;
+		
+		try(Connection con = DriverManager.getConnection(CONNECTION_STRING);
+				PreparedStatement insertCl = con.prepareStatement("INSERT INTO CLIENTE (DNI,NOMBRE,APELLIDO1,APELLIDO2) VALUES (?,?,?,?)")){
+			
+			//Cliente cl = new Cliente(CONNECTION_STRING, CONNECTION_STRING, FILE, CONNECTION_STRING);
+			
+			String dni = cliente.getDni();
+			String name = cliente.getNombre();
+			String ap1 = cliente.getApellido1();
+			String ap2 = cliente.getApellido2();
+			
+			insertCl.setString(1,dni);
+			insertCl.setString(2,name);
+			insertCl.setString(3,ap1);
+			insertCl.setString(4,ap2);
+			
+			insertCl.executeUpdate();
+			
+			updated = true;
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.err.println("Error insertando cliente" + e);
+		}
+		
+		
 		return updated;
 	}
 }

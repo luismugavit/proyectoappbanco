@@ -14,9 +14,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.concurrent.FutureTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -53,7 +57,7 @@ public class InterfazPrueba extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ArrayList<Cliente> listaClientes;
+	private ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
 	private ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	private ArrayList<Movimiento> registroMovimientos = new ArrayList<Movimiento>();
 	private ModelTablaClientes modeloTabla; 
@@ -67,21 +71,26 @@ public class InterfazPrueba extends JFrame{
 	private JLabel lblTotalClientes, lblTotalCuentas, lblCapitalTotal;
 	private JLabel numeroClientes;
 	private JTextField txtFiltro;
+	private GestorBD gestorBD = new GestorBD();
 	
-	public InterfazPrueba(ArrayList<Cliente> listaClientes, ArrayList<Cuenta> listaCuenta){
+	public InterfazPrueba(){
 		
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Interfaz Banco");
 		setSize(640,480);
 		setLocationRelativeTo(null);
-		this.listaClientes = listaClientes;
-		this.listaCuentas = listaCuenta;
+		
+		
+		
+		
+		this.listaClientes = gestorBD.loadClientes();
+		this.listaCuentas = gestorBD.loadCuentas(listaClientes);
 		
 		
 		//Movimientos de prueba
-		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
-		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuenta.get(0)));
-		registroMovimientos.add(new Gasto(LocalDate.now(), 500.0f, "prueba", listaCuenta.get(0)));
+		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuentas.get(0)));
+		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuentas.get(0)));
+		registroMovimientos.add(new Gasto(LocalDate.now(), 500.0f, "prueba", listaCuentas.get(0)));
 		//iniciar CardLayout
 		card = new CardLayout();
 		iniciarCardLayout(card);
@@ -92,6 +101,15 @@ public class InterfazPrueba extends JFrame{
 		crearOpcionesMenu(menuBarra);
 		
 		//setVisible(true);
+		
+		this.addWindowListener((WindowListener) new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		        
+		        
+		        System.exit(0);  // termina la app
+		    }
+		});
 	}
 	
 	public void crearOpcionesMenu(JMenuBar menuBarra) {
@@ -836,6 +854,7 @@ public class InterfazPrueba extends JFrame{
 			String dniNuevoCliente = campoDNI.getText();
 			Cliente newCliente = new Cliente(nombreNuevoCliente, apellido1NuevoCliente, apellido2NuevoCliente, dniNuevoCliente);
 			listaClientes.add(newCliente);
+			gestorBD.insertarClientesEnBD(newCliente);
 			modeloTabla.fireTableDataChanged();
 			actualizarDashboard();
 			tablaClientes.repaint();
@@ -1216,7 +1235,9 @@ public class InterfazPrueba extends JFrame{
 		
 		ArrayList<Cliente> listafiltro = new ArrayList<Cliente>();
 		for(Cliente cl: listaClientes) {
-			if(cl.getNombre().contains(txtFiltro.getText())) {
+			String fullName = cl.getNombre() + " " + cl.getApellido1() + " " + cl.getApellido2();
+			
+			if(fullName.contains(txtFiltro.getText())) {
 				listafiltro.add(cl);
 			};
 			
