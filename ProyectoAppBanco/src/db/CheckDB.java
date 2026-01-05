@@ -15,11 +15,9 @@ public class CheckDB {
 		
 		if(Files.notExists(dbFile)) {
 			
-			System.out.println("Inicializando BD");
+			//System.out.println("Inicializando BD");
 			DataInitializer dbInit = new DataInitializer();
 			dbInit.InicializarBD();
-		}else {
-			System.out.println("Abriendo BD");
 		}
 		
 		

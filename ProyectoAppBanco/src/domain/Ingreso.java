@@ -19,6 +19,11 @@ public class Ingreso extends Movimiento {
 	public Cuenta getDestino() {
 		return destino;
 	}
+	
+
+	public void setDestino(Cuenta destino) {
+		this.destino = destino;
+	}
 
 	@Override
 	public String toString() {

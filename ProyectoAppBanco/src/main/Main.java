@@ -21,7 +21,7 @@ public class Main {
 	public static ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();
 
 	//Con csv para hacer pruebas
-	public static void cargarClientes() {
+	public static void cargarClientesPrueba() {
 		
 		File f = new File("src/db/db_clientes.csv");
 		
@@ -115,7 +115,7 @@ public class Main {
 		//InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 		//ventana base de datos
 		CheckDB check = new CheckDB();
-		check.init("src/resources/Banco1.db");
+		check.init("src/resources/Banco2.db");
 		InterfazPrueba ventanaBD = new InterfazPrueba();
 		//ventana.setVisible(true);
 		ventanaBD.setVisible(true);

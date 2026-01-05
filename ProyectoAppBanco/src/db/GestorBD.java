@@ -4,13 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Gasto;
+import domain.Ingreso;
+import domain.Movimiento;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "src/resources/Banco1.db";
+	private static final String FILE = "src/resources/Banco2.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
@@ -45,7 +49,7 @@ public class GestorBD {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		loadCuentas(clientes);
+		
 		loadPrestamos(clientes);
 		return clientes;
 	}
@@ -118,6 +122,58 @@ public class GestorBD {
 				return cuentas;
 	}
 	
+	public ArrayList<Movimiento> loadMovimientos(ArrayList<Cuenta> cuentas) {
+		ArrayList<Movimiento> movimientos = new ArrayList<Movimiento>();
+		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
+				PreparedStatement pstGasto = conn.prepareStatement("SELECT * FROM GASTO");
+				PreparedStatement pstIngreso = conn.prepareStatement("SELECT * FROM INGRESO")
+						) {
+				ResultSet rsGasto = pstGasto.executeQuery();
+				ResultSet rsIngreso = pstIngreso.executeQuery();
+				
+				while (rsGasto.next()) {
+					String fecha = rsGasto.getString("FECHA");
+					float cantidad = rsGasto.getFloat("CANTIDAD");
+					String concept = rsGasto.getString("CONCEPTO");
+						String acc = rsGasto.getString("NUMERO_CUENTA");
+					
+					Cuenta cuentaProp = null;
+					for(Cuenta cuenta : cuentas) {
+						if(cuenta.getNumeroCuenta().equals(acc)) {
+							cuentaProp = cuenta;
+						}
+					}
+					
+					Gasto gasto = new Gasto(LocalDate.parse(fecha), cantidad, concept, cuentaProp); 
+					movimientos.add(gasto);
+				}
+				while (rsIngreso.next()) {
+					String fecha = rsIngreso.getString("FECHA");
+					float cantidad = rsIngreso.getFloat("CANTIDAD");
+					String concept = rsIngreso.getString("CONCEPTO");
+						String acc = rsIngreso.getString("NUMERO_CUENTA");
+					
+					Cuenta cuentaProp = null;
+					for(Cuenta cuenta : cuentas) {
+						if(cuenta.getNumeroCuenta().equals(acc)) {
+							cuentaProp = cuenta;
+						}
+					}
+					
+					Ingreso ingres = new Ingreso(LocalDate.parse(fecha), cantidad, concept, cuentaProp); 
+					movimientos.add(ingres);
+				}
+				
+				rsIngreso.close();
+				rsGasto.close();
+				conn.close();
+			
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
+			return movimientos;
+	}
+	
 	@SuppressWarnings("unused")
 	public static boolean UpdateCliente(Cliente cliente) {
 		boolean updated = false;
@@ -183,10 +239,10 @@ public class GestorBD {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET NUMERO_CUENTA = ?, SALDO = ? WHERE ID = ?")) {
+		         PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CUENTA SET SALDO = ? WHERE NUMERO_CUENTA = ?")) {
 
-			pstUpdate.setString(1, cuenta.getNumeroCuenta());
-	        pstUpdate.setFloat(2, cuenta.getSaldo());
+			pstUpdate.setFloat(1, cuenta.getSaldo());
+			pstUpdate.setString(2, cuenta.getNumeroCuenta());
 	        
 			
 			if (pstUpdate.executeUpdate() == 1) {
@@ -254,4 +310,81 @@ public class GestorBD {
 		
 		return updated;
 	}
+	
+	public boolean insertarCuentasBD(Cuenta cuenta) {
+		boolean updated = false;
+		
+		try(Connection con = DriverManager.getConnection(CONNECTION_STRING);
+				PreparedStatement insertCnt = con.prepareStatement("INSERT INTO CUENTA (NUMERO_CUENTA,SALDO,ID_CLIENTE) VALUES (?,?,?)")){
+			
+			//Cliente cl = new Cliente(CONNECTION_STRING, CONNECTION_STRING, FILE, CONNECTION_STRING);
+			
+			String numCuenta = cuenta.getNumeroCuenta();
+			Float saldo = cuenta.getSaldo();
+			int idCliente = cuenta.getPropietario().getId();
+			
+			insertCnt.setString(1, numCuenta);
+			insertCnt.setFloat(2, saldo);
+			insertCnt.setInt(3, idCliente);
+			
+			insertCnt.executeUpdate();
+			
+			updated = true;
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.err.println("Error insertando cliente" + e);
+		}
+		
+		return updated;
+	}
+	
+	public boolean insertarGastoBD(Gasto gasto) {
+		boolean updated = false;
+		
+		try(Connection con = DriverManager.getConnection(CONNECTION_STRING);
+				PreparedStatement insertGast = con.prepareStatement("INSERT INTO GASTO (FECHA, CANTIDAD, CONCEPTO,NUMERO_CUENTA) VALUES (?, ?, ?,?)")){
+			
+			//Cliente cl = new Cliente(CONNECTION_STRING, CONNECTION_STRING, FILE, CONNECTION_STRING);
+			
+			insertGast.setString(1,gasto.getFecha().toString());
+			insertGast.setFloat(2, gasto.getCantidad());
+			insertGast.setString(3, gasto.getConcepto());
+			insertGast.setString(4,gasto.getOrigen().getNumeroCuenta());
+			insertGast.executeUpdate();
+			
+			updated = true;
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.err.println("Error insertando cliente" + e);
+		}
+		
+		return updated;
+	}
+	
+	public boolean insertarIngresoBD(Ingreso ingreso) {
+		boolean updated = false;
+		
+		try(Connection con = DriverManager.getConnection(CONNECTION_STRING);
+				PreparedStatement insertIngreso = con.prepareStatement("INSERT INTO INGRESO (FECHA, CANTIDAD, CONCEPTO,NUMERO_CUENTA) VALUES (?, ?, ?,?)")){
+			
+			//Cliente cl = new Cliente(CONNECTION_STRING, CONNECTION_STRING, FILE, CONNECTION_STRING);
+			
+			insertIngreso.setString(1,ingreso.getFecha().toString());
+			insertIngreso.setFloat(2, ingreso.getCantidad());
+			insertIngreso.setString(3, ingreso.getConcepto());
+			insertIngreso.setString(4,ingreso.getDestino().getNumeroCuenta());
+			insertIngreso.executeUpdate();
+			
+			updated = true;
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.err.println("Error insertando cliente" + e);
+		}
+		
+		return updated;
+	}
+	
 }

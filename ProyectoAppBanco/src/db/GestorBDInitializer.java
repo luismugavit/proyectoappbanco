@@ -10,11 +10,13 @@ import java.sql.Statement;
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Gasto;
+import domain.Ingreso;
 import domain.Prestamo;
 
 public class GestorBDInitializer {
 
-	private static final String FILE = "src/resources/Banco1.db";
+	private static final String FILE = "src/resources/Banco2.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBDInitializer() {
@@ -24,8 +26,6 @@ public class GestorBDInitializer {
 			System.err.format("* Error al cargar el driver de la BBDD: %s\\n", e.getMessage());
 		}
 	}
-	
-	
 	public void crearTablas() {
     	try {
     		File dbFile = new File(FILE);
@@ -47,11 +47,27 @@ public class GestorBDInitializer {
                     + " APELLIDO2 TEXT\n"
                     + ");";
         	String sqlCuenta = "CREATE TABLE IF NOT EXISTS CUENTA (\n"
-                    + " ID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-                    + " NUMERO_CUENTA TEXT NOT NULL UNIQUE,\n"
+                    //+ " ID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " NUMERO_CUENTA TEXT PRIMARY KEY NOT NULL,\n"
                     + " SALDO REAL NOT NULL,\n"
                     + " ID_CLIENTE INTEGER NOT NULL,\n"
                     + " FOREIGN KEY(ID_CLIENTE) REFERENCES CLIENTE(ID)\n"
+                    + ");";
+        	
+        	String sqlGasto = "CREATE TABLE IF NOT EXISTS GASTO (\n"
+                    + " ID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " FECHA TEXT,\n"
+                    + " CANTIDAD REAL,\n"
+                    + " CONCEPTO TEXT,\n"
+                    + " NUMERO_CUENTA TEXT NOT NULL\n"
+                    + ");";
+        	
+        	String sqlIngreso = "CREATE TABLE IF NOT EXISTS INGRESO (\n"
+                    + " ID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " FECHA TEXT,\n"
+                    + " CANTIDAD REAL,\n"
+                    + " CONCEPTO TEXT,\n"
+                    + " NUMERO_CUENTA TEXT NOT NULL\n"
                     + ");";
         	String sqlPrestamo = "CREATE TABLE IF NOT EXISTS PRESTAMO (\n"
                     + " ID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
@@ -64,6 +80,8 @@ public class GestorBDInitializer {
         	try (Statement stmt = con.createStatement()) {
                 stmt.execute(sqlCliente);
                 stmt.execute(sqlCuenta);
+                stmt.execute(sqlGasto);
+                stmt.execute(sqlIngreso);
                 stmt.execute(sqlPrestamo);
         	}
         	System.out.println("- Tablas creadas.");
@@ -113,21 +131,56 @@ public class GestorBDInitializer {
 		
 		return cliente;
 	}
-	public void insertCuenta(Cuenta cuenta, Cliente cliente) {
+	public void insertCuenta(Cuenta cuenta) {
 		try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
 	        PreparedStatement pstmt = con.prepareStatement("INSERT INTO CUENTA (NUMERO_CUENTA, SALDO, ID_CLIENTE) VALUES (?, ?, ?)")) {
 			
 			pstmt.setString(1, cuenta.getNumeroCuenta());
             pstmt.setFloat(2, cuenta.getSaldo());
-            pstmt.setLong(3, cliente.getId());
+            pstmt.setLong(3, cuenta.getPropietario().getId());
 			pstmt.executeUpdate();
 			
-			System.out.format("- Cuenta '%s' insertada para el cliente ID %d\n", cuenta.getNumeroCuenta(), cliente.getId());
+			System.out.format("- Cuenta '%s' insertada para el cliente ID %d\n", cuenta.getNumeroCuenta(), cuenta.getPropietario().getId());
 		}
 		catch (SQLException e) {
 			System.err.format("* Error al insertar Cuenta '%s': %s\n", cuenta.getNumeroCuenta(), e.getMessage());
 		}
 	}
+	
+	public void insertGasto(Gasto gasto) {
+		try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
+		        PreparedStatement pstmt = con.prepareStatement("INSERT INTO GASTO (FECHA, CANTIDAD, CONCEPTO,NUMERO_CUENTA) VALUES (?, ?, ?,?)")) {
+				
+				pstmt.setString(1,gasto.getFecha().toString());
+				pstmt.setFloat(2, gasto.getCantidad());
+				pstmt.setString(3, gasto.getConcepto());
+				pstmt.setString(4,gasto.getOrigen().getNumeroCuenta());
+				pstmt.executeUpdate();
+				
+				//System.out.format("- Cuenta '%s' insertada para el cliente ID %d\n", cuenta.getNumeroCuenta(), cuenta.getPropietario().getId());
+			}
+			catch (SQLException e) {
+				System.err.format("* Error al insertar gasto");
+			}
+	}
+	
+	public void insertIngreso(Ingreso ingreso) {
+		try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
+		        PreparedStatement pstmt = con.prepareStatement("INSERT INTO INGRESO (FECHA, CANTIDAD, CONCEPTO,NUMERO_CUENTA) VALUES (?, ?, ?,?)")) {
+				
+				pstmt.setString(1,ingreso.getFecha().toString());
+				pstmt.setFloat(2, ingreso.getCantidad());
+				pstmt.setString(3, ingreso.getConcepto());
+				pstmt.setString(4,ingreso.getDestino().getNumeroCuenta());
+				pstmt.executeUpdate();
+				
+				//System.out.format("- Cuenta '%s' insertada para el cliente ID %d\n", cuenta.getNumeroCuenta(), cuenta.getPropietario().getId());
+			}
+			catch (SQLException e) {
+				System.err.format("* Error al insertar ingreso");
+			}
+	}
+	
 	public void insertPrestamo(Prestamo prestamo, Cliente cliente) {
 		try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
 			PreparedStatement pstmt = con.prepareStatement("INSERT INTO CLIENTE (DNI, NOMBRE, APELLIDO1, APELLIDO2) VALUES (?, ?, ?, ?)")) {

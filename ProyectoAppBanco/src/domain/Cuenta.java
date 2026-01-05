@@ -10,7 +10,7 @@ public class Cuenta {
 	private float saldo;
 	private Cliente propietario;
 	private ArrayList<Movimiento> historial;
-	private int id = 0;
+	private static int id = 1;
 	
 	public Cuenta(Cliente cliente) {
 		this.numeroCuenta = "ES-" + id;

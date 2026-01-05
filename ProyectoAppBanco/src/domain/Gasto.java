@@ -19,6 +19,14 @@ public class Gasto extends Movimiento {
 		return origen;
 	}
 
+	public Cuenta getOrigen() {
+		return origen;
+	}
+
+	public void setOrigen(Cuenta origen) {
+		this.origen = origen;
+	}
+
 	@Override
 	public String toString() {
         return "Gasto [Fecha=" + fecha + ", Cantidad=" + cantidad + ", Origen=" + origen.getNumeroCuenta() + "]";

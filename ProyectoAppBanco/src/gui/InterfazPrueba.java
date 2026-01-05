@@ -72,6 +72,7 @@ public class InterfazPrueba extends JFrame{
 	private JLabel numeroClientes;
 	private JTextField txtFiltro;
 	private GestorBD gestorBD = new GestorBD();
+	private ArrayList<Cliente> listafiltro;
 	
 	public InterfazPrueba(){
 		
@@ -84,8 +85,12 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		this.listaClientes = gestorBD.loadClientes();
+		//System.out.println(listaClientes.get(0).getListaCuentas().size());
 		this.listaCuentas = gestorBD.loadCuentas(listaClientes);
 		
+		//System.out.println(listaClientes.get(1).getListaCuentas().size());
+		this.registroMovimientos = gestorBD.loadMovimientos(listaCuentas);
+		//System.out.println(registroMovimientos);
 		
 		//Movimientos de prueba
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuentas.get(0)));
@@ -313,7 +318,12 @@ public class InterfazPrueba extends JFrame{
 	public JPanel tabCliente(int fila) {
 		
 		JPanel panelVistaCliente = new JPanel(new BorderLayout());
-		Cliente cliente = listaClientes.get(fila);
+		Cliente cliente;
+		if(txtFiltro.getText().equals("")) {
+			cliente = listaClientes.get(fila);
+		}else {
+			cliente = listafiltro.get(fila);
+		}
 		
 		
 		//TITULO NOMBRE CLIENTE
@@ -513,7 +523,8 @@ public class InterfazPrueba extends JFrame{
 						Cuenta newCuenta = new Cuenta(cliente);
 						cliente.addCuenta(newCuenta);
 						listaCuentas.add(newCuenta);
-						System.out.println(listaCuentas.getLast().getNumeroCuenta());
+						gestorBD.insertarCuentasBD(newCuenta);
+						//System.out.println(listaCuentas.getLast().getNumeroCuenta());
 						JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
 						tablaCuentasC.repaint();
 						tablaCuentas.repaint();
@@ -691,15 +702,20 @@ public class InterfazPrueba extends JFrame{
 			Movimiento newMov = new Ingreso(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
 			registroMovimientos.add(newMov);
 			listaMovimientos.add(newMov);
+			
 			try {
 				float cantidad = Float.parseFloat(sCantidad);
 				cuentaSeleccionada.ingreso(cantidad, concepto); //Llama al método de Cuenta
+				gestorBD.insertarIngresoBD((Ingreso)newMov);
+				gestorBD.UpdateCuenta(((Ingreso)newMov).getDestino());
 				// Refrescar la tabla de cuentas y el saldo total
 				modeloCuentas1.fireTableDataChanged(); //fireTableDataChanged: indica que el contenido ha cambiado y tiene que redibujarse 
 				saldoTotal.setText(cliente.getSaldoTotal() + " €"); // Actualiza el saldo
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			
+			//System.out.println(((Ingreso)newMov).getDestino().getSaldo());
 			tablaMovimientosCliente.repaint();
 		});
 		
@@ -724,9 +740,12 @@ public class InterfazPrueba extends JFrame{
 					Movimiento newMov = new Gasto(LocalDate.now(), Float.parseFloat(sCantidad), concepto, cuentaSeleccionada);
 					registroMovimientos.add(newMov);
 					listaMovimientos.add(newMov);
-					System.out.println(registroMovimientos.getLast());
+					gestorBD.insertarGastoBD((Gasto)newMov);
+					 
+					gestorBD.UpdateCuenta(((Gasto)newMov).getOrigen());
+					//System.out.println(registroMovimientos.getLast());
 					modeloCuentas1.fireTableDataChanged();
-					saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); //Actualiza el saldo
+					saldoTotal.setText(cliente.getSaldoTotal() + " €");
 				}
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1063,8 +1082,17 @@ public class InterfazPrueba extends JFrame{
 		JButton botonSort = new JButton(icono1);
 		botonSort.setBackground(new Color(235, 238, 255));
 		botonSort.addActionListener(e -> {
-			ordenarPorSaldoRecursivo(listaClientes, listaClientes.size());
-			tablaClientes.repaint();
+			
+			if(txtFiltro.getText().equals("")) {
+				ordenarPorSaldoRecursivo(listaClientes, listaClientes.size());
+				tablaClientes.repaint();
+				modeloTabla.fireTableDataChanged();
+			}else {
+				ordenarPorSaldoRecursivo(listafiltro, listafiltro.size());
+				tablaClientes.repaint();
+			}
+			
+			
 		});
 		
 		botonAddCliente.setOpaque(true);
@@ -1211,11 +1239,11 @@ public class InterfazPrueba extends JFrame{
 	public static void ordenarPorSaldoRecursivo(ArrayList<Cliente> lista, int n) {
 		
 		if(n <= 1) {
-			System.out.println("Ordenada");
+			//System.out.println("Ordenada");
 		}else {
 			
 			for(int i = 0 ; i < n; i ++) {
-				if(i+1 < lista.size()-1) {
+				if(i+1 < lista.size()) {
 					if(lista.get(i).getSaldoTotal() < lista.get(i+1).getSaldoTotal()) {
 						Cliente auxiliar = lista.get(i);
 						lista.set(i, lista.get(i+1));
@@ -1233,18 +1261,25 @@ public class InterfazPrueba extends JFrame{
 	
 	public void filtrarClientes() {
 		
-		ArrayList<Cliente> listafiltro = new ArrayList<Cliente>();
+		listafiltro = new ArrayList<Cliente>();
 		for(Cliente cl: listaClientes) {
 			String fullName = cl.getNombre() + " " + cl.getApellido1() + " " + cl.getApellido2();
 			
+			
 			if(fullName.contains(txtFiltro.getText())) {
+				//System.out.println(fullName);
 				listafiltro.add(cl);
 			};
 			
 		}
 		
-		ModelTablaClientes modeloFiltro = new ModelTablaClientes(listafiltro);
-		tablaClientes.setModel(modeloFiltro);
+		//modeloTabla = new ModelTablaClientes(listafiltro);
+		//ModelTablaClientes modeloFiltro = new ModelTablaClientes(listafiltro);
+		modeloTabla = new ModelTablaClientes(listafiltro);
+		tablaClientes.setModel(modeloTabla);
+		//tablaClientes.setModel(modeloTabla);
+		
+		
 		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(150);
 		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(258);
 		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
