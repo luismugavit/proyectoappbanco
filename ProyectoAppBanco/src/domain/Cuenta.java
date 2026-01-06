@@ -20,7 +20,13 @@ public class Cuenta {
 		id++;
 	}
 	
-	
+	public Cuenta(String numeroCuenta, Cliente cliente) {
+		this.numeroCuenta = numeroCuenta;
+		this.saldo = 0.0f;
+		this.propietario = cliente;
+		this.historial = new ArrayList<Movimiento>();
+		id++;
+	}
 	
 	public String getNumeroCuenta() {
 		return numeroCuenta;

@@ -70,6 +70,7 @@ public class InterfazPrueba extends JFrame{
 	private int filaSelec = -1;
 	private JLabel lblTotalClientes, lblTotalCuentas, lblCapitalTotal;
 	private JLabel numeroClientes;
+	private JLabel numeroCuentas;
 	private JTextField txtFiltro;
 	private GestorBD gestorBD = new GestorBD();
 	private ArrayList<Cliente> listafiltro;
@@ -244,11 +245,12 @@ public class InterfazPrueba extends JFrame{
 		
 		modeloTablaCuentas = new ModeloTablaCuentas1(listaCuentas);
 		tablaCuentas = new JTable(modeloTablaCuentas);
-		tablaCuentas.setRowHeight(20);
-		tablaCuentas.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tablaCuentas.getColumnModel().getColumn(0).setPreferredWidth(220);
-		tablaCuentas.getColumnModel().getColumn(1).setPreferredWidth(270);
-
+		tablaCuentas.setRowHeight(24);
+		//tablaCuentas.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tablaCuentas.getColumnModel().getColumn(0).setPreferredWidth(150);
+		tablaCuentas.getColumnModel().getColumn(1).setPreferredWidth(258);
+		tablaCuentas.getColumnModel().getColumn(2).setPreferredWidth(200);
+		tablaCuentas.getTableHeader().setPreferredSize(new Dimension(tablaCuentas.getPreferredSize().width, 32));
 		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
 			
 			JLabel result = new JLabel();
@@ -269,6 +271,7 @@ public class InterfazPrueba extends JFrame{
 				result.setBackground(Color.WHITE);
 			}
 			
+			result.setFont(new Font("Arial" , Font.PLAIN, 14));
 			
 			
 			result.setOpaque(true);
@@ -312,6 +315,7 @@ public class InterfazPrueba extends JFrame{
 		
 		tablaCuentas.addMouseListener(mouseAdapter);
 		scroller = new JScrollPane(tablaCuentas);
+		scroller.setBorder(BorderFactory.createEmptyBorder());
 				
 	}
 	
@@ -324,8 +328,9 @@ public class InterfazPrueba extends JFrame{
 		}else {
 			cliente = listafiltro.get(fila);
 		}
-		
-		
+		Color azulOscuro = new Color(24, 5, 92);
+		Color fondo = new Color(88, 81, 180);
+		Color color2 = new Color(255, 196, 0);
 		//TITULO NOMBRE CLIENTE
 		JPanel pNombre = new JPanel(new BorderLayout());
 		pNombre.setBackground(new Color(24, 5, 92)); // Azul corporativo
@@ -336,22 +341,32 @@ public class InterfazPrueba extends JFrame{
 		nombre.setFont(new Font("Arial", Font.BOLD, 18));
 		nombre.setForeground(Color.WHITE);
 		
+		JLabel dni = new JLabel("DNI: "+cliente.getDni() +"     " ); 
+		dni.setFont(new Font("Arial", Font.PLAIN, 16));
+		dni.setForeground(Color.WHITE);
 		
 		pNombre.add(nombre);
+		pNombre.add(dni, BorderLayout.EAST);
 		panelVistaCliente.add(pNombre, BorderLayout.NORTH);
 
 
-		JPanel info = new JPanel(new GridLayout(2,3,10,10));
+		JPanel info = new JPanel(new GridLayout(2,3,0,0));
 
 		//PANEL SALDO TOTAL
 		JPanel panelSaldoTotal = new JPanel(new BorderLayout());
-		
-		JLabel labelSaldo = new JLabel(" SALDO TOTAL: "); 
+		panelSaldoTotal.setBackground(getBackground());
+		panelSaldoTotal.setOpaque(true);
+		JLabel labelSaldo = new JLabel(" SALDO TOTAL ");
+		labelSaldo.setHorizontalAlignment(SwingConstants.CENTER);
+		labelSaldo.setBackground(color2);
+		labelSaldo.setOpaque(true);
 		labelSaldo.setFont(new Font("Arial", Font.BOLD, 20));
+		labelSaldo.setForeground(azulOscuro);
 		
 		JLabel saldoTotal = new JLabel(cliente.getSaldoTotal() + " €", JLabel.CENTER);
-		saldoTotal.setFont(new Font("Arial", Font.BOLD, 24));
-		saldoTotal.setForeground(new Color(24, 5, 92));
+		saldoTotal.setFont(new Font("Arial", Font.BOLD, 30));
+		
+		saldoTotal.setForeground(azulOscuro);
 		
 		
 		panelSaldoTotal.add(labelSaldo, BorderLayout.NORTH);
@@ -369,6 +384,15 @@ public class InterfazPrueba extends JFrame{
 		
 
 		//PANEL TABLA MOVIMIENTOS DEL CLIENTE
+		
+		JPanel panelMovs = new JPanel(new BorderLayout());
+		
+		JLabel labelMovs = new JLabel(" MOVIMIENTOS "); 
+		labelMovs.setHorizontalAlignment(SwingConstants.CENTER);
+		labelMovs.setBackground(color2);
+		labelMovs.setOpaque(true);
+		labelMovs.setFont(new Font("Arial", Font.BOLD, 20));
+		labelMovs.setForeground(azulOscuro);
 		
 		ArrayList<Movimiento> listaMovimientos = new ArrayList<Movimiento>();
 		for(Movimiento mov : registroMovimientos) {
@@ -390,6 +414,7 @@ public class InterfazPrueba extends JFrame{
 		
 		tablaMovimientosCliente.setShowGrid(false);
 		tablaMovimientosCliente.setRowHeight(20);
+		tablaMovimientosCliente.setBackground(getBackground());
 		
 		TableCellRenderer rendererMovs = (table, value, isSelected, hasFocus, row, column) -> {
 			JLabel result = new JLabel();
@@ -421,38 +446,30 @@ public class InterfazPrueba extends JFrame{
 			
 		};
 		tablaMovimientosCliente.setDefaultRenderer(Object.class, rendererMovs);
+		panelMovs.add(labelMovs, BorderLayout.NORTH);
+		panelMovs.add(tablaMovimientosCliente);
+		info.add(panelMovs);
 		
 		
-		info.add(tablaMovimientosCliente);
 		
 		
 		
-		
-		// PANEL BOTONES DE OPERACIONES
-
-		JPanel panelBotonesCuenta = new JPanel();
-		JButton btnIngresar = new JButton("Ingresar");
-		JButton btnGastar = new JButton("Gastar");
-		JButton btnSimular = new JButton("Simular Inversión");
-
-			// JButton btnTransferir = new JButton("Transferir");
-
-		panelBotonesCuenta.add(btnIngresar);
-		panelBotonesCuenta.add(btnGastar);
-		panelBotonesCuenta.add(btnSimular);
-		
-		info.add(panelBotonesCuenta);
 		
 		
 		//PANEL TABLA CUENTAS DEL CLIENTE
 		
 				JPanel panelTablaCuentas = new JPanel(new BorderLayout());
 				
-				
+				JLabel labelCuentas = new JLabel(" CUENTAS "); 
+				labelCuentas.setHorizontalAlignment(SwingConstants.CENTER);
+				labelCuentas.setBackground(color2);
+				labelCuentas.setOpaque(true);
+				labelCuentas.setFont(new Font("Arial", Font.BOLD, 20));
+				labelCuentas.setForeground(azulOscuro);
 				
 				ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
 				JTable tablaCuentasC = new JTable(modeloCuentas1);
-				
+				tablaCuentasC.setBackground(getBackground());
 				TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
 					
 					JLabel result = new JLabel();
@@ -500,7 +517,7 @@ public class InterfazPrueba extends JFrame{
 					
 				};
 				tablaCuentasC.setDefaultRenderer(Object.class, renderer);
-				tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
+				//tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
 				
 				JButton btnAddCuenta = new JButton("Nueva cuenta");
 				
@@ -520,7 +537,8 @@ public class InterfazPrueba extends JFrame{
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						Cuenta newCuenta = new Cuenta(cliente);
+						//System.out.println("ES-"+(listaCuentas.size()+1));
+						Cuenta newCuenta = new Cuenta("ES"+(listaCuentas.size()+1),cliente);
 						cliente.addCuenta(newCuenta);
 						listaCuentas.add(newCuenta);
 						gestorBD.insertarCuentasBD(newCuenta);
@@ -533,12 +551,32 @@ public class InterfazPrueba extends JFrame{
 				});
 				
 //				JScrollPane scroll = new JScrollPane(tablaCuentasC);
-				
+				panelTablaCuentas.setBackground(fondo);
 				panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
 				panelTablaCuentas.add(tablaCuentasC);
-				panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
+				panelTablaCuentas.add(labelCuentas, BorderLayout.NORTH);
+				//panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
 
 				info.add(panelTablaCuentas);
+				
+		// PANEL BOTONES DE OPERACIONES
+
+		JPanel panelBotonesCuenta = new JPanel();
+		
+		//panelBotonesCuenta.setBackground(fondo);
+		panelBotonesCuenta.setOpaque(true);
+		JButton btnIngresar = new JButton("Ingresar");
+		JButton btnGastar = new JButton("Gastar");
+		JButton btnSimular = new JButton("Simular Inversión");
+
+			// JButton btnTransferir = new JButton("Transferir");
+
+		panelBotonesCuenta.add(btnIngresar);
+		panelBotonesCuenta.add(btnGastar);
+		panelBotonesCuenta.add(btnSimular);
+		
+		info.add(panelBotonesCuenta);		
+		
 		//PANEL PRESTAMOS
 		
 		
@@ -1006,6 +1044,7 @@ public class InterfazPrueba extends JFrame{
 		if (lblTotalCuentas != null) lblTotalCuentas.setText(String.valueOf(numCuentas));
 		if (lblCapitalTotal != null) lblCapitalTotal.setText(String.format("%,.2f €", dineroTotal));
 		if (numeroClientes != null) numeroClientes.setText(" Nº de Clientes: " + listaClientes.size() + "   ");
+		if (numeroCuentas != null) numeroClientes.setText(" Nº de Cuentas: " + listaCuentas.size() + "   ");
 
 	}
 	
@@ -1120,6 +1159,11 @@ public class InterfazPrueba extends JFrame{
 		pTitulo.setBackground(new Color(24, 5, 92)); // Azul corporativo
 		pTitulo.setPreferredSize(new Dimension(800, 40));
 		
+		numeroCuentas = new JLabel(" Nº de Clientes: " + listaClientes.size() + "   "); 
+		numeroCuentas.setFont(new Font("Arial", Font.PLAIN, 18));
+		numeroCuentas.setForeground(Color.WHITE);
+		pTitulo.add(numeroCuentas, BorderLayout.EAST);
+		
 		JLabel titulo = new JLabel(" CUENTAS DEUSTOBANK "); 
 		titulo.setFont(new Font("Arial", Font.BOLD, 18));
 		titulo.setForeground(Color.WHITE);
@@ -1135,7 +1179,7 @@ public class InterfazPrueba extends JFrame{
 		panelBotones.add(botonAddCuenta);
 		
 		panelTablaCuentas.add(scroller);
-		panelTablaCuentas.add(panelBotones, BorderLayout.SOUTH);
+		//panelTablaCuentas.add(panelBotones, BorderLayout.SOUTH);
 
 		
 		return panelTablaCuentas;

@@ -31,13 +31,14 @@ public class ModeloTablaCuentas1 extends AbstractTableModel{
 		switch(column) {
 		case 0 -> nombreColumna = "NUMERO_CUENTA";
 		case 1 -> nombreColumna = "SALDO";
+		case 2 -> nombreColumna = "PROPIETARIO";
 		}
 		return nombreColumna;
 	}
 	@Override
 	public int getColumnCount() {
 		// TODO Auto-generated method stub
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -48,8 +49,10 @@ public class ModeloTablaCuentas1 extends AbstractTableModel{
 		Cuenta cuenta = cuentas.get(rowIndex);
 		if(columnIndex == 0) {
 			return cuenta.getNumeroCuenta();
-		}else {
+		}else if (columnIndex == 1){
 			return cuenta.getSaldo();
+		}else {
+			return cuenta.getPropietario().getDni();
 		}
 	
 	}
