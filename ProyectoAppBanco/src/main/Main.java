@@ -115,7 +115,7 @@ public class Main {
 		//InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
 		//ventana base de datos
 		CheckDB check = new CheckDB();
-		check.init("src/resources/Banco2.db");
+		check.init("ProyectoAppBanco/src/resources/Banco2.db");
 		InterfazPrueba ventanaBD = new InterfazPrueba();
 		//ventana.setVisible(true);
 		ventanaBD.setVisible(true);

@@ -123,7 +123,9 @@ public class InterfazPrueba extends JFrame{
 			JMenu menuClientes = new JMenu("Opciones");
 			
 			JMenuItem itemMain = new JMenuItem("Main");
-			itemMain.setIcon(new ImageIcon("resources/home.png"));
+			//ImageIcon homeImg = new ImageIcon("ProyectoAppBanco/src/resources/home.png");
+			
+			itemMain.setIcon(redimensionarIconoHQ("ProyectoAppBanco/src/resources/home.png", 20, 20));
 			itemMain.setOpaque(true);
 			
 			
@@ -1007,30 +1009,32 @@ public class InterfazPrueba extends JFrame{
 		
 		JPanel pBotones = new JPanel(new GridLayout(1, 2, 40, 0));
 		pBotones.setBorder(BorderFactory.createEmptyBorder(30, 20, 30, 20));
-		pBotones.setBackground(Color.WHITE);
+		pBotones.setBackground(getBackground());
 		
 		Color azulCorporativoTexto = new Color(24, 5, 92);
 		Color azulFondoBoton = new Color(240, 242, 255);
 		
-		Icon iconoClientes = redimensionarIconoHQ("src/resources/Deustoclientespng.png", 80, 80);		
-		Icon iconoGraficas = redimensionarIconoHQ("src/resources/Deustobankgrafica.png", 80, 80);	
+		Icon iconoClientes = redimensionarIconoHQ("ProyectoAppBanco/src/resources/Deustoclientespng.png", 80, 80);		
+		Icon iconoGraficas = redimensionarIconoHQ("ProyectoAppBanco/src/resources/Deustobankgrafica.png", 80, 80);	
 		
 		
 		JButton b1 = new JButton("GESTIONAR CLIENTES", iconoClientes);
 		b1.setFont(new Font("Arial", Font.BOLD, 16));
 		b1.setForeground(azulCorporativoTexto);
-		b1.setBackground(azulFondoBoton);
+		b1.setBackground(Color.LIGHT_GRAY);
 		b1.setBorderPainted(false);
+		b1.setContentAreaFilled(false);
 		b1.setFocusPainted(false); // Quitar el borde 3D de los botones
-		b1.setOpaque(true);
+		b1.setOpaque(false);
 		b1.setVerticalTextPosition(SwingConstants.BOTTOM);
 		b1.setHorizontalTextPosition(SwingConstants.CENTER);
 		
 		JButton b2 = new JButton("VER GRÁFICAS", iconoGraficas);
 		b2.setFont(new Font("Arial", Font.BOLD, 18));
 		b2.setForeground(azulCorporativoTexto);
-		b2.setBackground(azulFondoBoton);
+		b2.setBackground(getBackground());
 		b2.setFocusPainted(false);
+		b2.setContentAreaFilled(false);
 		b2.setBorderPainted(false);
 		b2.setOpaque(true);
 		b2.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -1129,8 +1133,8 @@ public class InterfazPrueba extends JFrame{
 		//Image imagen = ((ImageIcon) icono).getImage().getScaledInstance(40, 50, Image.SCALE_DEFAULT);
 		
 		
-		Icon icono2 = redimensionarIconoHQ("src/resources/addUser.png", 40, 40);
-		Icon icono1 = redimensionarIconoHQ("src/resources/sortasc.png", 40, 40);
+		Icon icono2 = redimensionarIconoHQ("ProyectoAppBanco/src/resources/addUser.png", 40, 40);
+		Icon icono1 = redimensionarIconoHQ("ProyectoAppBanco/src/resources/sortasc.png", 40, 40);
 		
 		JButton botonAddCliente = new JButton(icono2);
 		//botonAddCliente.setIcon(new ImageIcon());

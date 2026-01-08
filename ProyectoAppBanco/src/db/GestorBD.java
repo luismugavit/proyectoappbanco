@@ -14,7 +14,7 @@ import domain.Movimiento;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "src/resources/Banco2.db";
+	private static final String FILE = "ProyectoAppBanco/src/resources/Banco2.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
