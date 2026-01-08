@@ -1005,15 +1005,36 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		
-		JPanel pBotones = new JPanel(new GridLayout(1, 2, 20, 0));
-		pBotones.setBorder(BorderFactory.createTitledBorder("Accesos directos"));
+		JPanel pBotones = new JPanel(new GridLayout(1, 2, 40, 0));
+		pBotones.setBorder(BorderFactory.createEmptyBorder(30, 20, 30, 20));
+		pBotones.setBackground(Color.WHITE);
 		
-		JButton b1 = new JButton("GESTIONAR CLIENTES");
+		Color azulCorporativoTexto = new Color(24, 5, 92);
+		Color azulFondoBoton = new Color(240, 242, 255);
+		
+		Icon iconoClientes = redimensionarIconoHQ("src/resources/Deustoclientespng.png", 80, 80);		
+		Icon iconoGraficas = redimensionarIconoHQ("src/resources/Deustobankgrafica.png", 80, 80);	
+		
+		
+		JButton b1 = new JButton("GESTIONAR CLIENTES", iconoClientes);
 		b1.setFont(new Font("Arial", Font.BOLD, 16));
+		b1.setForeground(azulCorporativoTexto);
+		b1.setBackground(azulFondoBoton);
+		b1.setBorderPainted(false);
+		b1.setFocusPainted(false); // Quitar el borde 3D de los botones
+		b1.setOpaque(true);
+		b1.setVerticalTextPosition(SwingConstants.BOTTOM);
+		b1.setHorizontalTextPosition(SwingConstants.CENTER);
 		
-		JButton b2 = new JButton("VER GRÁFICAS");
-		b2.setFont(new Font("Arial", Font.BOLD, 16));
-		
+		JButton b2 = new JButton("VER GRÁFICAS", iconoGraficas);
+		b2.setFont(new Font("Arial", Font.BOLD, 18));
+		b2.setForeground(azulCorporativoTexto);
+		b2.setBackground(azulFondoBoton);
+		b2.setFocusPainted(false);
+		b2.setBorderPainted(false);
+		b2.setOpaque(true);
+		b2.setVerticalTextPosition(SwingConstants.BOTTOM);
+		b2.setHorizontalTextPosition(SwingConstants.CENTER);
 		
 		b1.addActionListener(e -> card.show(panelCont, "tablaClientes")); // CardLayout para tabla de clientes
 		b2.addActionListener(e -> card.show(panelCont, "grafica")); // CardLayout para inversiones
@@ -1191,7 +1212,7 @@ public class InterfazPrueba extends JFrame{
 		JPanel tituloPanel = new JPanel(new BorderLayout());
 		
 		
-		JLabel titulo = new JLabel("ACCIONESS DEUSTOBANK");
+		JLabel titulo = new JLabel("ACCIONES DEUSTOBANK");
 		titulo.setFont(new Font("Arial", Font.BOLD, 20));
 		titulo.setHorizontalAlignment(SwingConstants.CENTER);
 		
