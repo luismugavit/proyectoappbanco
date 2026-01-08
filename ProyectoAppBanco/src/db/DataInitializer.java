@@ -1,10 +1,12 @@
 package db;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import domain.Cliente;
 import domain.Cuenta;
+import domain.Ingreso;
 import domain.Prestamo;
 
 public class DataInitializer {
@@ -91,6 +93,9 @@ public class DataInitializer {
 
 		
 		
+		Ingreso ing1 = new Ingreso(LocalDate.now(), 100,"cena" , c1);
+		
+		gestor.insertIngreso(ing1);
 
 		Prestamo p1 = new Prestamo(null, 1000, 10, 2);
 		gestor.insertPrestamo(p1, clientes.get(0));

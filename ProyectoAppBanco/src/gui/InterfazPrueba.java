@@ -1044,7 +1044,7 @@ public class InterfazPrueba extends JFrame{
 		if (lblTotalCuentas != null) lblTotalCuentas.setText(String.valueOf(numCuentas));
 		if (lblCapitalTotal != null) lblCapitalTotal.setText(String.format("%,.2f €", dineroTotal));
 		if (numeroClientes != null) numeroClientes.setText(" Nº de Clientes: " + listaClientes.size() + "   ");
-		if (numeroCuentas != null) numeroClientes.setText(" Nº de Cuentas: " + listaCuentas.size() + "   ");
+		if (numeroCuentas != null) numeroCuentas.setText(" Nº de Cuentas: " + listaCuentas.size() + "   ");
 
 	}
 	
@@ -1159,7 +1159,7 @@ public class InterfazPrueba extends JFrame{
 		pTitulo.setBackground(new Color(24, 5, 92)); // Azul corporativo
 		pTitulo.setPreferredSize(new Dimension(800, 40));
 		
-		numeroCuentas = new JLabel(" Nº de Clientes: " + listaClientes.size() + "   "); 
+		numeroCuentas = new JLabel(" Nº de Cuentas: " + listaCuentas.size() + "   "); 
 		numeroCuentas.setFont(new Font("Arial", Font.PLAIN, 18));
 		numeroCuentas.setForeground(Color.WHITE);
 		pTitulo.add(numeroCuentas, BorderLayout.EAST);
