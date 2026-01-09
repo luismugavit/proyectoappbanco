@@ -387,4 +387,24 @@ public class GestorBD {
 		return updated;
 	}
 	
+	public boolean insertarPrestamoBD(Prestamo prestamo) {
+	    boolean updated = false;
+	    try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
+	         PreparedStatement insertP = con.prepareStatement(
+	             "INSERT INTO PRESTAMO (CANTIDAD_SOLICITADA, INTERES_ANUAL, PLAZO_MESES, ID_CLIENTE) VALUES (?, ?, ?, ?)")) {
+	        
+	        insertP.setDouble(1, prestamo.getCantidadSolicitada());
+	        insertP.setDouble(2, prestamo.getInteresAnual());
+	        insertP.setInt(3, prestamo.getPlazoMeses());
+	        insertP.setInt(4, prestamo.getCliente().getId()); 
+	        insertP.executeUpdate();
+	        
+	        updated = true;
+	        
+	    } catch (Exception e) {
+	        System.err.println("Error insertando préstamo: " + e.getMessage());
+	    }
+	    return updated;
+	}
+	
 }

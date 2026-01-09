@@ -49,6 +49,7 @@ import domain.Cuenta;
 import domain.Gasto;
 import domain.Ingreso;
 import domain.Movimiento;
+import domain.Prestamo;
 import domain.Transferencia;
 
 public class InterfazPrueba extends JFrame{
@@ -711,15 +712,23 @@ public class InterfazPrueba extends JFrame{
 
                     if (exito) {
                         
-                        modeloCuentas1.fireTableDataChanged(); // Refrescar tabla cuentas
-                        modeloPrestamos.fireTableDataChanged();
-                        saldoTotal.setText("Saldo Total: " + cliente.getSaldoTotal() + " euros"); // Refrescar saldo
-                        deudaTotal.setText("Deuda Total: " + String.format("%.2f", cliente.getDeudaTotal()) + " euros"); // Refrescar deuda
+                        Prestamo nuevoP = cliente.getPrestamos().get(cliente.getPrestamos().size() - 1);
                         
+                        gestorBD.insertarPrestamoBD(nuevoP);
+
                         Movimiento movPrestamo = new Ingreso(LocalDate.now(), (float)cantidad, "Préstamo Concedido", cuentaDestino);
                         registroMovimientos.add(movPrestamo);
+                        
+                        gestorBD.insertarIngresoBD((Ingreso)movPrestamo);
+                        
+                        gestorBD.UpdateCuenta(cuentaDestino);
 
-                        JOptionPane.showMessageDialog(this, "¡Préstamo concedido y dinero ingresado!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        modeloCuentas1.fireTableDataChanged();
+                        modeloPrestamos.fireTableDataChanged();
+                        saldoTotal.setText(cliente.getSaldoTotal() + " €");
+                        deudaTotal.setText("Deuda Total: " + String.format("%.2f", cliente.getDeudaTotal()) + " euros");
+
+                        JOptionPane.showMessageDialog(this, "¡Préstamo concedido e ingresado en cuenta!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                 } catch (NumberFormatException ex) {

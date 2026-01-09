@@ -180,19 +180,20 @@ public class GestorBDInitializer {
 				System.err.format("* Error al insertar ingreso");
 			}
 	}
-	
 	public void insertPrestamo(Prestamo prestamo, Cliente cliente) {
-		try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
-			PreparedStatement pstmt = con.prepareStatement("INSERT INTO CLIENTE (DNI, NOMBRE, APELLIDO1, APELLIDO2) VALUES (?, ?, ?, ?)")) {
+	    try (Connection con = DriverManager.getConnection(CONNECTION_STRING);
+	         PreparedStatement pstmt = con.prepareStatement(
+	             "INSERT INTO PRESTAMO (CANTIDAD_SOLICITADA, INTERES_ANUAL, PLAZO_MESES, ID_CLIENTE) VALUES (?, ?, ?, ?)")) {
 
-			pstmt.setDouble(1, prestamo.getCantidadSolicitada());
-            pstmt.setDouble(2, prestamo.getInteresAnual());
-            pstmt.setInt(3, prestamo.getPlazoMeses());
-            pstmt.setInt(4, cliente.getId());
-	}
-		catch (SQLException e){
-			System.err.format("* Error al insertar Prestamo'%s': %s\n", prestamo.getId(), e.getMessage());
-		}
+	        pstmt.setDouble(1, prestamo.getCantidadSolicitada());
+	        pstmt.setDouble(2, prestamo.getInteresAnual());
+	        pstmt.setInt(3, prestamo.getPlazoMeses());
+	        pstmt.setInt(4, cliente.getId());
+	        pstmt.executeUpdate();
+	        
+	    } catch (SQLException e) {
+	        System.err.format("* Error al insertar Prestamo: %s\n", e.getMessage());
+	    }
 	}
 }
 
