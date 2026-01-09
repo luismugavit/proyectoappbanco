@@ -564,8 +564,10 @@ public class InterfazPrueba extends JFrame{
 				
 		// PANEL BOTONES DE OPERACIONES
 
-		JPanel panelBotonesCuenta = new JPanel();
+		JPanel panelBotonesCuenta = new JPanel(new GridLayout(2,3));
 		
+		
+			
 		//panelBotonesCuenta.setBackground(fondo);
 		panelBotonesCuenta.setOpaque(true);
 		JButton btnIngresar = new JButton("Ingresar");
@@ -577,31 +579,41 @@ public class InterfazPrueba extends JFrame{
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
 		panelBotonesCuenta.add(btnSimular);
+		panelBotonesCuenta.add(btnAddCuenta);
 		
-		info.add(panelBotonesCuenta);		
+		
+		panelVistaCliente.add(panelBotonesCuenta, BorderLayout.SOUTH);
+		//info.add(panelBotonesCuenta);		
 		
 		//PANEL PRESTAMOS
 		
+		JPanel panelPrestamos = new JPanel(new BorderLayout());
+		JLabel labelPrestamos = new JLabel(" PRESTAMOS ");
+		labelPrestamos.setHorizontalAlignment(SwingConstants.CENTER);
+		labelPrestamos.setBackground(color2);
+		labelPrestamos.setOpaque(true);
+		labelPrestamos.setFont(new Font("Arial", Font.BOLD, 20));
+		labelPrestamos.setForeground(azulOscuro);
+		
+		panelPrestamos.add(labelPrestamos, BorderLayout.NORTH);
 		
 		JLabel deudaTotal = new JLabel("Deuda Total: " + cliente.getDeudaTotal() + " euros", JLabel.CENTER);
 		deudaTotal.setFont(new Font("Arial", Font.BOLD, 16));
 		deudaTotal.setBackground(Color.RED);
 		deudaTotal.setOpaque(true);
 		
+		
+		
 		ModeloTablaPrestamos modeloPrestamos = new ModeloTablaPrestamos(cliente.getPrestamos());
 		JTable tablaPrestamos = new JTable(modeloPrestamos);
+		
+		
 		JScrollPane scrollPrestamos = new JScrollPane(tablaPrestamos);
-		scrollPrestamos.setBorder(BorderFactory.createTitledBorder("Préstamos Activos"));
+		scrollPrestamos.setBorder(BorderFactory.createEmptyBorder());	
 	
+		panelPrestamos.add(scrollPrestamos);
 		
-		info.add(scrollPrestamos);
-		
-		
-		
-		
-		
-		
-		
+		info.add(panelPrestamos);
 		
 		
 		panelVistaCliente.add(info);
@@ -651,7 +663,7 @@ public class InterfazPrueba extends JFrame{
 	                JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente.");
 	                
 	                
-	                nombre.setText((cliente.getNombre() + " " + cliente.getApellido1() + " " + cliente.getApellido2()).toUpperCase());
+	                nombre.setText((cliente.getNombre() + " " + cliente.getApellido1() + " " + cliente.getApellido2()));
 	                modeloTabla.fireTableDataChanged(); 
 	                panelVistaCliente.revalidate();
 	                panelVistaCliente.repaint();

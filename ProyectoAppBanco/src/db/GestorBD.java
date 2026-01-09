@@ -179,11 +179,11 @@ public class GestorBD {
 		boolean updated = false;
 		
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
-			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTE SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ?, WHERE ID = ?");
+			PreparedStatement pstUpdate = conn.prepareStatement("UPDATE CLIENTE SET NOMBRE = ?, APELLIDO1 = ?, APELLIDO2 = ?, DNI = ? WHERE ID = ?");
 			PreparedStatement pstDeleteCuentas = conn.prepareStatement( "DELETE FROM CUENTA WHERE ID_CLIENTE = ?" );
 			PreparedStatement pstDeletePrestamos = conn.prepareStatement("DELETE FROM PRESTAMO WHERE ID_CLIENTE = ?");
-			PreparedStatement pstInsertCuentas = conn.prepareStatement("INSERT INTO CUENTA (ID_CLIENTE, ID_CUENTA) VALUES (?, ?)");
-			PreparedStatement pstInsertPrestamos = conn.prepareStatement("INSERT INTO PRESTAMO (ID_CLIENTE, ID_PRESTAMO) VALUES (?, ?)")){
+			PreparedStatement pstInsertCuentas = conn.prepareStatement("INSERT INTO CUENTA (ID_CLIENTE, NUMERO_CUENTA) VALUES (?, ?)");
+			PreparedStatement pstInsertPrestamos = conn.prepareStatement("INSERT INTO PRESTAMO (ID_CLIENTE, ID) VALUES (?, ?)")){
 
 			pstUpdate.setString(1, cliente.getNombre());
 			pstUpdate.setString(2, cliente.getApellido1());
