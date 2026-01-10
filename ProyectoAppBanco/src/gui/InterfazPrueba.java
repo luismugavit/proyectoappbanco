@@ -166,7 +166,59 @@ public class InterfazPrueba extends JFrame{
 		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
 		
 		
-		
+TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+			
+			JLabel result = new JLabel();
+			
+			if (value instanceof String) {
+				result.setText(value.toString());
+				
+			}else {
+				result.setText(String.valueOf(value));
+//				if(value instanceof Float){
+//					
+////					if( Float.valueOf((Float)value)< 0.0) {
+////						result.setForeground(Color.red);
+////					}else {
+////						result.setForeground(Color.green);
+////					}
+//					
+//				}
+			}
+			
+			result.setFont(new Font("Arial", Font.PLAIN, 14));
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			if(row % 2 == 0) {
+				result.setBackground(new Color(235, 238, 255));
+			}else {
+				result.setBackground(Color.WHITE);
+			}
+			
+			
+			
+			result.setOpaque(true);
+			return result;
+			
+			
+		};
+
+		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			
+			result.setText(value.toString());
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setBackground(new Color(24, 5, 92));
+			result.setForeground(Color.white);
+			result.setOpaque(true);
+			result.setFont(new Font("Arial", Font.BOLD, 14));
+			return result;
+			
+			
+		};
+		tablaClientes.getTableHeader().setPreferredSize(new Dimension(tablaClientes.getPreferredSize().width,32));
+		tablaClientes.setDefaultRenderer(Object.class, renderer);
+		tablaClientes.getTableHeader().setDefaultRenderer(headerRenderer);
 
 		
 		MouseAdapter mouseAdapter = new MouseAdapter() {
