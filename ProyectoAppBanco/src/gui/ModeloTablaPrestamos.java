@@ -13,7 +13,7 @@ public class ModeloTablaPrestamos extends AbstractTableModel{
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<Prestamo> prestamos;
-	private String[] columnas = {"ID", "Monto", "Cuota Mes", "Pendiente", "Estado"};
+	private String[] columnas = {"Cuota Mes", "Pendiente", "Estado"};
 	
 	public ModeloTablaPrestamos(List<Prestamo> prestamos) {
 		this.prestamos = prestamos;
@@ -38,15 +38,14 @@ public class ModeloTablaPrestamos extends AbstractTableModel{
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Prestamo prestamo = prestamos.get(rowIndex);
-		return switch (columnIndex) {
-        case 0 -> prestamo.getId();
-        case 1 -> String.format("%.2f €", prestamo.getCantidadSolicitada());
-        case 2 -> String.format("%.2f €", prestamo.getCuotaMensual());
-        case 3 -> String.format("%.2f €", prestamo.getCantidadPendiente());
-        case 4 -> prestamo.getEstado();
-        default -> null;
-		};
+	
 		
+		return switch (columnIndex) {
+			case 0 -> String.format("%.2f €", prestamo.getCuotaMensual());
+			case 1 -> String.format("%.2f €", prestamo.getCantidadPendiente());
+			case 2 -> prestamo.getEstado(); 
+			default -> null;
+		};
 	}
 	
 	public void setPrestamos(List<Prestamo> prestamos) {

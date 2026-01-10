@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import db.CheckDB;
-import db.DataInitializer;
-import db.GestorBD;
 import domain.Cliente;
 import domain.Cuenta;
 

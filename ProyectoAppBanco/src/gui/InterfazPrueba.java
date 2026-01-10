@@ -20,7 +20,6 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.concurrent.FutureTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -166,59 +165,10 @@ public class InterfazPrueba extends JFrame{
 		tablaClientes.getColumnModel().getColumn(1).setPreferredWidth(258);
 		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
 		
-		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
-			
-			JLabel result = new JLabel();
-			
-			if (value instanceof String) {
-				result.setText(value.toString());
-				
-			}else {
-				result.setText(String.valueOf(value));
-//				if(value instanceof Float){
-//					
-////					if( Float.valueOf((Float)value)< 0.0) {
-////						result.setForeground(Color.red);
-////					}else {
-////						result.setForeground(Color.green);
-////					}
-//					
-//				}
-			}
-			
-			result.setFont(new Font("Arial", Font.PLAIN, 14));
-			result.setHorizontalAlignment(SwingConstants.CENTER);
-			
-			if(row % 2 == 0) {
-				result.setBackground(new Color(235, 238, 255));
-			}else {
-				result.setBackground(Color.WHITE);
-			}
-			
-			
-			
-			result.setOpaque(true);
-			return result;
-			
-			
-		};
 		
-		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
-			JLabel result = new JLabel();
-			
-			result.setText(value.toString());
-			result.setHorizontalAlignment(SwingConstants.CENTER);
-			result.setBackground(new Color(24, 5, 92));
-			result.setForeground(Color.white);
-			result.setOpaque(true);
-			result.setFont(new Font("Arial", Font.BOLD, 14));
-			return result;
-			
-			
-		};
-		tablaClientes.getTableHeader().setPreferredSize(new Dimension(tablaClientes.getPreferredSize().width,32));
-		tablaClientes.setDefaultRenderer(Object.class, renderer);
-		tablaClientes.getTableHeader().setDefaultRenderer(headerRenderer);
+		
+
+		
 		MouseAdapter mouseAdapter = new MouseAdapter() {
 			
 			@Override
@@ -334,6 +284,42 @@ public class InterfazPrueba extends JFrame{
 		Color azulOscuro = new Color(24, 5, 92);
 		Color fondo = new Color(88, 81, 180);
 		Color color2 = new Color(255, 196, 0);
+		
+		TableCellRenderer headerRendererCommon = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			result.setText(value.toString());
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			result.setBackground(azulOscuro);
+			result.setForeground(Color.white);
+			result.setOpaque(true);
+			result.setFont(new Font("Arial", Font.BOLD, 14));
+			return result;
+		};
+		
+		TableCellRenderer cellRendererCommon = (table, value, isSelected, hasFocus, row, column) -> {
+			JLabel result = new JLabel();
+			if (value instanceof String) {
+				result.setText(value.toString());
+			} else {
+				result.setText(String.valueOf(value));
+			}
+			result.setHorizontalAlignment(SwingConstants.CENTER);
+			
+			if(row % 2 == 0) {
+				result.setBackground(new Color(235, 238, 255));
+			} else {
+				result.setBackground(Color.WHITE);
+			}
+			
+			if(table.getModel() instanceof ModeloTablaCuentas1 && row == filaSelec) {
+				result.setBackground(new Color(155, 129, 248));
+			}
+			
+			result.setFont(new Font("Arial" , Font.PLAIN, 14));
+			result.setOpaque(true);
+			return result;
+		};
+		
 		//TITULO NOMBRE CLIENTE
 		JPanel pNombre = new JPanel(new BorderLayout());
 		pNombre.setBackground(new Color(24, 5, 92)); // Azul corporativo
@@ -368,23 +354,11 @@ public class InterfazPrueba extends JFrame{
 		
 		JLabel saldoTotal = new JLabel(cliente.getSaldoTotal() + " €", JLabel.CENTER);
 		saldoTotal.setFont(new Font("Arial", Font.BOLD, 30));
-		
 		saldoTotal.setForeground(azulOscuro);
-		
-		
+			
 		panelSaldoTotal.add(labelSaldo, BorderLayout.NORTH);
 		panelSaldoTotal.add(saldoTotal);
-		
-		
 		info.add(panelSaldoTotal);
-
-		
-		
-		
-		
-		
-
-		
 
 		//PANEL TABLA MOVIMIENTOS DEL CLIENTE
 		
@@ -449,15 +423,18 @@ public class InterfazPrueba extends JFrame{
 			
 		};
 		tablaMovimientosCliente.setDefaultRenderer(Object.class, rendererMovs);
+		// APLICAR CABECERA AZUL
+		tablaMovimientosCliente.getTableHeader().setDefaultRenderer(headerRendererCommon);
+		tablaMovimientosCliente.getTableHeader().setPreferredSize(new Dimension(tablaMovimientosCliente.getPreferredSize().width, 32));
 		panelMovs.add(labelMovs, BorderLayout.NORTH);
-		panelMovs.add(tablaMovimientosCliente);
+		
+		// AÑADIDO: SCROLL PANE PARA MOVIMIENTOS (ESTO HACE QUE SE VEA EL HEADER)
+		JScrollPane scrollMovs = new JScrollPane(tablaMovimientosCliente);
+		scrollMovs.setBorder(BorderFactory.createEmptyBorder());
+		panelMovs.add(scrollMovs);
+		
+		
 		info.add(panelMovs);
-		
-		
-		
-		
-		
-		
 		
 		//PANEL TABLA CUENTAS DEL CLIENTE
 		
@@ -473,53 +450,12 @@ public class InterfazPrueba extends JFrame{
 				ModeloTablaCuentas1 modeloCuentas1 = new ModeloTablaCuentas1(cliente.getListaCuentas());
 				JTable tablaCuentasC = new JTable(modeloCuentas1);
 				tablaCuentasC.setBackground(getBackground());
-				TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
-					
-					JLabel result = new JLabel();
-					
-					
-					if (value instanceof String) {
-						result.setText(value.toString());
-					}else {
-						result.setText(String.valueOf(value));
-					
-					}
-					
-					
-					result.setHorizontalAlignment(SwingConstants.CENTER);
-					
-					if(row % 2 == 0) {
-						result.setBackground(new Color(235, 238, 255));
-					}else {
-						result.setBackground(Color.WHITE);
-					}
-					
-					if(row == filaSelec) {
-						result.setBackground(new Color(155, 129, 248));
-					}
-					
-					
-					
-					result.setOpaque(true);
-					return result;
-					
-					
-				};
+				tablaCuentasC.setRowHeight(24);
 				
-				TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
-					JLabel result = new JLabel();
-					
-					result.setText(value.toString());
-					result.setHorizontalAlignment(SwingConstants.CENTER);
-					result.setBackground(new Color(24, 5, 92));
-					result.setForeground(Color.white);
-					result.setOpaque(true);
-					result.setFont(new Font("Arial", Font.BOLD, 14));
-					return result;
-					
-					
-				};
-				tablaCuentasC.setDefaultRenderer(Object.class, renderer);
+				tablaCuentasC.setDefaultRenderer(Object.class, cellRendererCommon);
+				tablaCuentasC.getTableHeader().setDefaultRenderer(headerRendererCommon);
+				tablaCuentasC.getTableHeader().setPreferredSize(new Dimension(tablaCuentasC.getPreferredSize().width, 32));
+
 				//tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
 				
 				JButton btnAddCuenta = new JButton("Nueva cuenta");
@@ -553,12 +489,12 @@ public class InterfazPrueba extends JFrame{
 					}
 				});
 				
-//				JScrollPane scroll = new JScrollPane(tablaCuentasC);
+				JScrollPane scrollCuentas = new JScrollPane(tablaCuentasC);
+				scrollCuentas.setBorder(BorderFactory.createEmptyBorder());
 				panelTablaCuentas.setBackground(fondo);
 				panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
-				panelTablaCuentas.add(tablaCuentasC);
+				panelTablaCuentas.add(scrollCuentas); // <--- AÑADE EL SCROLL, NO LA TABLA SOLA
 				panelTablaCuentas.add(labelCuentas, BorderLayout.NORTH);
-				//panelTablaCuentas.add(tablaCuentasC.getTableHeader(), BorderLayout.NORTH);
 
 				info.add(panelTablaCuentas);
 				
@@ -606,13 +542,16 @@ public class InterfazPrueba extends JFrame{
 		
 		ModeloTablaPrestamos modeloPrestamos = new ModeloTablaPrestamos(cliente.getPrestamos());
 		JTable tablaPrestamos = new JTable(modeloPrestamos);
+		tablaPrestamos.setRowHeight(24);
 		
+		tablaPrestamos.setDefaultRenderer(Object.class, cellRendererCommon);
+		tablaPrestamos.getTableHeader().setDefaultRenderer(headerRendererCommon);
+		tablaPrestamos.getTableHeader().setPreferredSize(new Dimension(tablaPrestamos.getPreferredSize().width, 32));
 		
 		JScrollPane scrollPrestamos = new JScrollPane(tablaPrestamos);
 		scrollPrestamos.setBorder(BorderFactory.createEmptyBorder());	
-	
-		panelPrestamos.add(scrollPrestamos);
 		
+		panelPrestamos.add(scrollPrestamos);
 		info.add(panelPrestamos);
 		
 		
@@ -1033,7 +972,6 @@ public class InterfazPrueba extends JFrame{
 		pBotones.setBackground(getBackground());
 		
 		Color azulCorporativoTexto = new Color(24, 5, 92);
-		Color azulFondoBoton = new Color(240, 242, 255);
 		
 		Icon iconoClientes = redimensionarIconoHQ("ProyectoAppBanco/src/resources/Deustoclientespng.png", 80, 80);		
 		Icon iconoGraficas = redimensionarIconoHQ("ProyectoAppBanco/src/resources/Deustobankgrafica.png", 80, 80);	
