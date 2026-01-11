@@ -170,8 +170,10 @@ public class InterfazPrueba extends JFrame{
 		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
 			
 			JLabel result = new JLabel();
-			
-			if (value instanceof String) {
+			if (column == 2) {
+				result.setText(value.toString() + " €");
+			}
+			else if (value instanceof String) {
 				result.setText(value.toString());
 				
 			}else {
@@ -236,11 +238,15 @@ public class InterfazPrueba extends JFrame{
 	}
 	
 	public void crearTablaCuentas(ArrayList<Cuenta> listaCuentas) {
-		
+		if (modeloTablaCuentas != null) {
+			modeloTablaCuentas.setListaCuentas(listaCuentas);
+	        modeloTablaCuentas.fireTableDataChanged();
+		}
+		else {
+			
 		modeloTablaCuentas = new ModeloTablaCuentas1(listaCuentas);
 		tablaCuentas = new JTable(modeloTablaCuentas);
 		tablaCuentas.setRowHeight(24);
-	
 		tablaCuentas.getColumnModel().getColumn(0).setPreferredWidth(150);
 		tablaCuentas.getColumnModel().getColumn(1).setPreferredWidth(258);
 		tablaCuentas.getColumnModel().getColumn(2).setPreferredWidth(200);
@@ -248,8 +254,10 @@ public class InterfazPrueba extends JFrame{
 		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
 			
 			JLabel result = new JLabel();
-			
-			if (value instanceof String) {
+			if (column == 1) {
+				result.setText(value.toString() + " €");
+			}
+			else if (value instanceof String) {
 				result.setText(value.toString());
 			}else {
 				result.setText(String.valueOf(value));
@@ -271,7 +279,7 @@ public class InterfazPrueba extends JFrame{
 			result.setOpaque(true);
 			return result;
 			
-			
+		
 		};
 		
 		TableCellRenderer headerRenderer  = (table, value, isSelected, hasFocus, row, column) -> {
@@ -310,7 +318,7 @@ public class InterfazPrueba extends JFrame{
 		tablaCuentas.addMouseListener(mouseAdapter);
 		scroller = new JScrollPane(tablaCuentas);
 		scroller.setBorder(BorderFactory.createEmptyBorder());
-				
+		}
 	}
 	
 	public JPanel tabCliente(int fila) {
@@ -505,7 +513,8 @@ public class InterfazPrueba extends JFrame{
 			
 				
 				JButton btnAddCuenta = new JButton("Nueva cuenta");
-				
+				JButton btnBorrarCuenta = new JButton("Borrar cuenta");
+				btnBorrarCuenta.setBackground(new Color(255,150,150));
 				
 				tablaCuentasC.addMouseListener(new MouseAdapter() {
 					@Override
@@ -538,7 +547,42 @@ public class InterfazPrueba extends JFrame{
 						panelVistaCliente.revalidate();
 					}
 				});
-				
+				btnBorrarCuenta.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						int fila = tablaCuentasC.getSelectedRow();
+						if (fila < 0) {
+							JOptionPane.showMessageDialog(null, "Selecciona una cuenta para borrar.", "Borrar", JOptionPane.WARNING_MESSAGE);
+						}
+						else {
+							Cuenta cuenta = cliente.getListaCuentas().get(fila);
+							int confirmar = JOptionPane.showConfirmDialog(null, 
+							        "¿Estás seguro de que deseas borrar la cuenta " + cuenta.getNumeroCuenta() + "?",
+							        "Confirmar" , JOptionPane.YES_NO_OPTION);
+							if (confirmar == JOptionPane.YES_OPTION) {
+								boolean exito = gestorBD.DeleteCuenta(cuenta);
+								if (exito) {
+									cliente.getListaCuentas().remove(cuenta);
+						            listaCuentas.remove(cuenta);
+						            modeloCuentas1.fireTableDataChanged();
+								
+								if (modeloTablaCuentas != null) {
+									modeloTablaCuentas.fireTableDataChanged();
+								}
+								actualizarDashboard();
+					            saldoTotal.setText(cliente.getSaldoTotal() + " €");
+					            
+					            JOptionPane.showMessageDialog(null, "Cuenta borrada con exito.");
+								
+					        } else {
+					            JOptionPane.showMessageDialog(null, "Error al borrar la cuenta de la BD.", "Error", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+						}
+					}
+					
+				});
 				
 				scrollCuentas.setBorder(BorderFactory.createEmptyBorder());
 				panelTablaCuentas.setBackground(fondo);
@@ -550,7 +594,7 @@ public class InterfazPrueba extends JFrame{
 				
 		// PANEL BOTONES DE OPERACIONES
 
-		JPanel panelBotonesCuenta = new JPanel(new GridLayout(2,3));
+		JPanel panelBotonesCuenta = new JPanel(new GridLayout(2,4));
 		
 		
 			
@@ -565,9 +609,6 @@ public class InterfazPrueba extends JFrame{
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
 		panelBotonesCuenta.add(btnSimular);
-		panelBotonesCuenta.add(btnAddCuenta);
-		
-		
 		panelVistaCliente.add(panelBotonesCuenta, BorderLayout.SOUTH);
 
 		
@@ -738,6 +779,8 @@ public class InterfazPrueba extends JFrame{
             }
         });
         
+        panelBotonesCuenta.add(btnAddCuenta);
+		panelBotonesCuenta.add(btnBorrarCuenta);
 		
 		// Listener para el BOTÓN INGRESAR
 		btnIngresar.addActionListener(e->{
@@ -1161,11 +1204,11 @@ public class InterfazPrueba extends JFrame{
 		botonSort.addActionListener(e -> {
 			
 			if(txtFiltro.getText().equals("")) {
-				ordenarPorSaldoRecursivo(listaClientes, listaClientes.size());
+				ordenarClientePorSaldoRecursivo(listaClientes, listaClientes.size());
 				tablaClientes.repaint();
 				modeloTabla.fireTableDataChanged();
 			}else {
-				ordenarPorSaldoRecursivo(listafiltro, listafiltro.size());
+				ordenarClientePorSaldoRecursivo(listafiltro, listafiltro.size());
 				tablaClientes.repaint();
 			}
 			
@@ -1210,14 +1253,22 @@ public class InterfazPrueba extends JFrame{
 		panelTablaCuentas.add(pTitulo, BorderLayout.NORTH);
 		
 		crearTablaCuentas(listaCuentas);
+		Icon icono = redimensionarIconoHQ("ProyectoAppBanco/src/resources/sortasc.png", 40, 40);
 		JPanel panelBotones = new JPanel();
-		JButton botonAddCuenta = new JButton("Añadir Cuenta");
+		JButton botonSort = new JButton(icono);
+		botonSort.setBackground(new Color(235, 238, 255));
+		botonSort.addActionListener(e -> {
+			ordenarCuentaPorSaldoRecursivo(listaCuentas, listaCuentas.size());
+			crearTablaCuentas(listaCuentas);
+			modeloTabla.fireTableDataChanged();
+			tablaCuentas.revalidate();
+			tablaCuentas.repaint();
+		});
+		panelBotones.add(botonSort);
 		
-		botonAddCuenta.addActionListener(e -> card.show(panelCont, "TablaCuentas"));
-		panelBotones.add(botonAddCuenta);
 		
 		panelTablaCuentas.add(scroller);
-		//panelTablaCuentas.add(panelBotones, BorderLayout.SOUTH);
+		panelTablaCuentas.add(panelBotones, BorderLayout.SOUTH);
 
 		
 		return panelTablaCuentas;
@@ -1318,7 +1369,7 @@ public class InterfazPrueba extends JFrame{
 	}
 	
 	
-	public static void ordenarPorSaldoRecursivo(ArrayList<Cliente> lista, int n) {
+	public static void ordenarClientePorSaldoRecursivo(ArrayList<Cliente> lista, int n) {
 		
 		if(n <= 1) {
 			return;
@@ -1336,7 +1387,30 @@ public class InterfazPrueba extends JFrame{
 				
 			}
 			
-			ordenarPorSaldoRecursivo(lista, n-1);
+			ordenarClientePorSaldoRecursivo(lista, n-1);
+		}
+		
+	}
+	
+	public static void ordenarCuentaPorSaldoRecursivo(ArrayList<Cuenta> lista, int n) {
+		
+		if(n <= 1) {
+			return;
+		}else {
+			
+			for(int i = 0 ; i < n; i ++) {
+				if(i+1 < lista.size()) {
+					if(lista.get(i).getSaldo() < lista.get(i+1).getSaldo()) {
+						Cuenta auxiliar = lista.get(i);
+						lista.set(i, lista.get(i+1));
+						lista.set(i+1, auxiliar);
+						
+					}
+				}
+				
+			}
+			
+			ordenarCuentaPorSaldoRecursivo(lista, n-1);
 		}
 		
 	}

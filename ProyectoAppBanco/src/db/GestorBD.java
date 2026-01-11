@@ -256,6 +256,26 @@ public class GestorBD {
 		}
 		return updated;
 	}
+	public boolean DeleteCuenta(Cuenta cuenta) {
+		boolean updated = false;
+		
+		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
+		         PreparedStatement pstUpdate = conn.prepareStatement("DELETE FROM CUENTA WHERE NUMERO_CUENTA = ?")) {
+
+			pstUpdate.setString(1, cuenta.getNumeroCuenta());
+	        
+			
+			if (pstUpdate.executeUpdate() == 1) {
+				updated = true;
+			}
+		} catch (Exception e) {
+			
+			System.err.format("Error borrando la cuenta '%s'", cuenta.getNumeroCuenta());
+			e.printStackTrace();
+			return false;
+		}
+		return updated;
+	}
 	
 	public boolean updatePrestamo(Prestamo prestamo) {
 		boolean updated = false;

@@ -56,7 +56,10 @@ public class ModeloTablaCuentas1 extends AbstractTableModel{
 		}
 	
 	}
-
+	public void setListaCuentas(ArrayList<Cuenta> cuentas) {
+	    this.cuentas = cuentas ;
+	    fireTableDataChanged();
+	}
 	
 	
 	
