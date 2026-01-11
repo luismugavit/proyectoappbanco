@@ -13,7 +13,7 @@ import domain.Prestamo;
 import gui.InterfazPrueba;
 
 public class Main {
-	
+	//listas de prueba previas a la implementacion de la BD
 	public static ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
 	public static ArrayList<Cuenta> listaCuentas = new ArrayList<Cuenta>();
 	public static ArrayList<Prestamo> listaPrestamos = new ArrayList<Prestamo>();
@@ -56,12 +56,12 @@ public class Main {
 					
 					
 				}catch (Exception e) {
-					// TODO: handle exception
+					
 				}
 			}
 			sc.close();
 		} catch (FileNotFoundException e) {
-			// TODO: handle exception
+		
 			System.out.println("a");
 		}
 		
@@ -70,52 +70,10 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-//		Cliente[] clientes = {
-//				new Cliente(11, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
-//				new Cliente(12, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
-//				new Cliente(13, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
-//				new Cliente(14, "A", "A", "A", "B", new ArrayList<Cuenta>(), new ArrayList<Prestamo>()),
-//				
-//		};
-//		
-//		for(Cliente c : clientes) {
-//			
-//			listaClientes.add(c);
-//		}
-//		
-//		Cuenta [] cuentas = {
-//				new Cuenta("ES01", (float) 1500.50, clientes[0]),
-//				new Cuenta("ES02", (float) 2435.45, clientes[1]),
-//				new Cuenta("ES03", (float) 956.32, clientes[2]),
-//				new Cuenta("ES04", (float) 10000.93, clientes[3]),
-//		};
-//		
-//		for (Cuenta cuenta : cuentas) {
-//			listaCuentas.add(cuenta);
-//			
-//		}
-//		
-//		for(int i= 0; i<clientes.length; i++) {
-//			clientes[i].getListaCuentas().add(cuentas[i]);
-//		}
-//		cargarClientes();
-		//prueba
-		//Con base de datos
-		//DataInitializer inicializador = new DataInitializer();
-        //inicializador.InicializarBD();
-//		GestorBD gestorBD = new GestorBD();
-//		ArrayList<Cliente> listaClientesBD = gestorBD.loadClientes();
-//		ArrayList<Cuenta> listaCuentasBD = gestorBD.loadCuentas(listaClientesBD);
-//		System.out.println(listaCuentasBD);
-//		
-//		System.out.println(listaClientes.size());
-		//ventana csv
-		//InterfazPrueba ventana = new InterfazPrueba(listaClientes,listaCuentas);
-		//ventana base de datos
 		CheckDB check = new CheckDB();
-		check.init("ProyectoAppBanco/src/resources/Banco2.db");
+		check.init("ProyectoAppBanco/src/resources/db/Banco2.db");
 		InterfazPrueba ventanaBD = new InterfazPrueba();
-		//ventana.setVisible(true);
+	
 		ventanaBD.setVisible(true);
 	}
 

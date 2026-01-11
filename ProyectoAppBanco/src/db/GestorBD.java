@@ -14,7 +14,7 @@ import domain.Movimiento;
 import domain.Prestamo;
 
 public class GestorBD {
-	private static final String FILE = "ProyectoAppBanco/src/resources/Banco2.db";
+	private static final String FILE = "ProyectoAppBanco/src/resources/db/Banco2.db";
 	private static final String CONNECTION_STRING = "jdbc:sqlite:" + FILE;
 	
 	public GestorBD() {
@@ -54,7 +54,7 @@ public class GestorBD {
 		return clientes;
 	}
 
-	@SuppressWarnings("unused")
+
 	public ArrayList<Prestamo> loadPrestamos(ArrayList<Cliente> clientes) {
 		ArrayList<Prestamo> prestamos  = new ArrayList<Prestamo>();
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
@@ -174,7 +174,7 @@ public class GestorBD {
 			return movimientos;
 	}
 	
-	@SuppressWarnings("unused")
+	
 	public static boolean UpdateCliente(Cliente cliente) {
 		boolean updated = false;
 		
@@ -234,7 +234,7 @@ public class GestorBD {
 		}
 		return updated;
 	}
-	@SuppressWarnings("unused")
+
 	public boolean UpdateCuenta(Cuenta cuenta) {
 		boolean updated = false;
 		
@@ -256,7 +256,7 @@ public class GestorBD {
 		}
 		return updated;
 	}
-	@SuppressWarnings("unused")
+	
 	public boolean updatePrestamo(Prestamo prestamo) {
 		boolean updated = false;
 		try (Connection conn = DriverManager.getConnection(CONNECTION_STRING);
@@ -286,7 +286,7 @@ public class GestorBD {
 		try(Connection con = DriverManager.getConnection(CONNECTION_STRING);
 				PreparedStatement insertCl = con.prepareStatement("INSERT INTO CLIENTE (DNI,NOMBRE,APELLIDO1,APELLIDO2) VALUES (?,?,?,?)")){
 			
-			//Cliente cl = new Cliente(CONNECTION_STRING, CONNECTION_STRING, FILE, CONNECTION_STRING);
+			
 			
 			String dni = cliente.getDni();
 			String name = cliente.getNombre();

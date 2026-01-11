@@ -38,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellRenderer;
@@ -77,7 +78,7 @@ public class InterfazPrueba extends JFrame{
 	
 	public InterfazPrueba(){
 		
-		//setDefaultCloseOperation(EXIT_ON_CLOSE);
+	
 		setTitle("Interfaz Banco");
 		setSize(640,480);
 		setLocationRelativeTo(null);
@@ -86,12 +87,12 @@ public class InterfazPrueba extends JFrame{
 		
 		
 		this.listaClientes = gestorBD.loadClientes();
-		//System.out.println(listaClientes.get(0).getListaCuentas().size());
+
 		this.listaCuentas = gestorBD.loadCuentas(listaClientes);
 		
-		//System.out.println(listaClientes.get(1).getListaCuentas().size());
+
 		this.registroMovimientos = gestorBD.loadMovimientos(listaCuentas);
-		//System.out.println(registroMovimientos);
+
 		
 		//Movimientos de prueba
 		registroMovimientos.add(new Ingreso(LocalDate.now(), 1000.0f, "prueba", listaCuentas.get(0)));
@@ -123,7 +124,7 @@ public class InterfazPrueba extends JFrame{
 			JMenu menuClientes = new JMenu("Opciones");
 			
 			JMenuItem itemMain = new JMenuItem("Main");
-			//ImageIcon homeImg = new ImageIcon("ProyectoAppBanco/src/resources/home.png");
+		
 			
 			itemMain.setIcon(redimensionarIconoHQ("ProyectoAppBanco/src/resources/home.png", 20, 20));
 			itemMain.setOpaque(true);
@@ -134,13 +135,13 @@ public class InterfazPrueba extends JFrame{
 			JMenuItem itemVerClientes = new JMenuItem("Tabla Clientes");
 			JMenuItem itemVerCuentas = new JMenuItem("Tabla Cuentas");
 			JMenuItem itemCrearCliente = new JMenuItem("Crear cliente");
-			//JMenuItem itemOpcionesCliente = new JMenuItem("Opciones");
+	
 			JMenuItem itemGrafica = new JMenuItem("Acciones");
 			
 			menuClientes.add(itemVerClientes);
 			menuClientes.add(itemVerCuentas);
 			menuClientes.add(itemCrearCliente);
-			//menuClientes.add(itemOpcionesCliente);
+
 			menuClientes.add(itemGrafica);
 			
 			//Al clickar en el boton correspondiente a una pestaña esta se abre con card.show( panelCont, "identificador")
@@ -166,7 +167,7 @@ public class InterfazPrueba extends JFrame{
 		tablaClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
 		
 		
-TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+		TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
 			
 			JLabel result = new JLabel();
 			
@@ -175,15 +176,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 				
 			}else {
 				result.setText(String.valueOf(value));
-//				if(value instanceof Float){
-//					
-////					if( Float.valueOf((Float)value)< 0.0) {
-////						result.setForeground(Color.red);
-////					}else {
-////						result.setForeground(Color.green);
-////					}
-//					
-//				}
+
 			}
 			
 			result.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -231,11 +224,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 				card.show(panelCont, "ClienteSeleccionado");
 			}
 			
-			@Override
-	    	public void mouseMoved(MouseEvent e) {
-	    		// TODO Auto-generated method stub
-	    		
-	    	}
+			
 			
 		};
 		
@@ -251,7 +240,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		modeloTablaCuentas = new ModeloTablaCuentas1(listaCuentas);
 		tablaCuentas = new JTable(modeloTablaCuentas);
 		tablaCuentas.setRowHeight(24);
-		//tablaCuentas.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	
 		tablaCuentas.getColumnModel().getColumn(0).setPreferredWidth(150);
 		tablaCuentas.getColumnModel().getColumn(1).setPreferredWidth(258);
 		tablaCuentas.getColumnModel().getColumn(2).setPreferredWidth(200);
@@ -313,7 +302,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 			
 			@Override
 	    	public void mouseMoved(MouseEvent e) {
-	    		// TODO Auto-generated method stub
+	    	
 	    		
 	    	}
 		};
@@ -374,7 +363,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		
 		//TITULO NOMBRE CLIENTE
 		JPanel pNombre = new JPanel(new BorderLayout());
-		pNombre.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pNombre.setBackground(new Color(24, 5, 92)); 
 		pNombre.setPreferredSize(new Dimension(800, 40));
 		pNombre.setOpaque(true);
 		
@@ -396,6 +385,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		//PANEL SALDO TOTAL
 		JPanel panelSaldoTotal = new JPanel(new BorderLayout());
 		panelSaldoTotal.setBackground(getBackground());
+		
 		panelSaldoTotal.setOpaque(true);
 		JLabel labelSaldo = new JLabel(" SALDO TOTAL ");
 		labelSaldo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -405,11 +395,15 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		labelSaldo.setForeground(azulOscuro);
 		
 		JLabel saldoTotal = new JLabel(cliente.getSaldoTotal() + " €", JLabel.CENTER);
-		saldoTotal.setFont(new Font("Arial", Font.BOLD, 30));
+		saldoTotal.setFont(new Font("Arial", Font.BOLD, 40));
 		saldoTotal.setForeground(azulOscuro);
+		saldoTotal.setBorder(new LineBorder(azulOscuro,10));
+		
 			
 		panelSaldoTotal.add(labelSaldo, BorderLayout.NORTH);
 		panelSaldoTotal.add(saldoTotal);
+		panelSaldoTotal.setBackground(Color.white);
+		
 		info.add(panelSaldoTotal);
 
 		//PANEL TABLA MOVIMIENTOS DEL CLIENTE
@@ -508,7 +502,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 				tablaCuentasC.getTableHeader().setDefaultRenderer(headerRendererCommon);
 				tablaCuentasC.getTableHeader().setPreferredSize(new Dimension(tablaCuentasC.getPreferredSize().width, 32));
 
-				//tablaCuentasC.getTableHeader().setDefaultRenderer(headerRenderer);
+			
 				
 				JButton btnAddCuenta = new JButton("Nueva cuenta");
 				
@@ -522,30 +516,34 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 					}
 				});
 				
-				
+				JScrollPane scrollCuentas = new JScrollPane(tablaCuentasC);
 				
 				btnAddCuenta.addActionListener(new ActionListener() {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						//System.out.println("ES-"+(listaCuentas.size()+1));
+					
 						Cuenta newCuenta = new Cuenta("ES"+(listaCuentas.size()+1),cliente);
 						cliente.addCuenta(newCuenta);
 						listaCuentas.add(newCuenta);
+						modeloCuentas1.fireTableDataChanged();
+						modeloTablaCuentas.fireTableDataChanged();
 						gestorBD.insertarCuentasBD(newCuenta);
-						//System.out.println(listaCuentas.getLast().getNumeroCuenta());
 						JOptionPane.showMessageDialog(null, "Cuenta " + newCuenta.getNumeroCuenta()+ " añadida con éxito", "Cuenta añadida", JOptionPane.INFORMATION_MESSAGE);
 						tablaCuentasC.repaint();
 						tablaCuentas.repaint();
-						modeloTablaCuentas.fireTableDataChanged();
+						scrollCuentas.repaint();
+						panelTablaCuentas.repaint();
+						panelVistaCliente.repaint();
+						panelVistaCliente.revalidate();
 					}
 				});
 				
-				JScrollPane scrollCuentas = new JScrollPane(tablaCuentasC);
+				
 				scrollCuentas.setBorder(BorderFactory.createEmptyBorder());
 				panelTablaCuentas.setBackground(fondo);
 				panelTablaCuentas.add(btnAddCuenta, BorderLayout.SOUTH);
-				panelTablaCuentas.add(scrollCuentas); // <--- AÑADE EL SCROLL, NO LA TABLA SOLA
+				panelTablaCuentas.add(scrollCuentas); 
 				panelTablaCuentas.add(labelCuentas, BorderLayout.NORTH);
 
 				info.add(panelTablaCuentas);
@@ -556,13 +554,13 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		
 		
 			
-		//panelBotonesCuenta.setBackground(fondo);
+
 		panelBotonesCuenta.setOpaque(true);
 		JButton btnIngresar = new JButton("Ingresar");
 		JButton btnGastar = new JButton("Gastar");
 		JButton btnSimular = new JButton("Simular Inversión");
 
-			// JButton btnTransferir = new JButton("Transferir");
+	
 
 		panelBotonesCuenta.add(btnIngresar);
 		panelBotonesCuenta.add(btnGastar);
@@ -571,7 +569,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		
 		
 		panelVistaCliente.add(panelBotonesCuenta, BorderLayout.SOUTH);
-		//info.add(panelBotonesCuenta);		
+
 		
 		//PANEL PRESTAMOS
 		
@@ -762,12 +760,14 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 				gestorBD.UpdateCuenta(((Ingreso)newMov).getDestino());
 				// Refrescar la tabla de cuentas y el saldo total
 				modeloCuentas1.fireTableDataChanged(); //fireTableDataChanged: indica que el contenido ha cambiado y tiene que redibujarse 
+				modeloMovs.fireTableDataChanged();
+				tablaMovimientosCliente.repaint();
 				saldoTotal.setText(cliente.getSaldoTotal() + " €"); // Actualiza el saldo
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this, "Cantidad no válida.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 			
-			//System.out.println(((Ingreso)newMov).getDestino().getSaldo());
+		
 			tablaMovimientosCliente.repaint();
 		});
 		
@@ -795,6 +795,8 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 					gestorBD.insertarGastoBD((Gasto)newMov);
 					 
 					gestorBD.UpdateCuenta(((Gasto)newMov).getOrigen());
+					tablaMovimientosCliente.repaint();
+					modeloMovs.fireTableDataChanged();
 					//System.out.println(registroMovimientos.getLast());
 					modeloCuentas1.fireTableDataChanged();
 					saldoTotal.setText(cliente.getSaldoTotal() + " €");
@@ -815,7 +817,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 	            if (sCapital != null && sAnios != null) {
 	                float capital = Float.parseFloat(sCapital);
 	                int anios = Integer.parseInt(sAnios);
-	                float interesFijo = 5.0f; // 5% de interés
+	                float interesFijo = 5.0f; 
 
 	                float beneficioFinal = calcularBeneficioRecursivo(capital, interesFijo, anios);
 
@@ -844,7 +846,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		JPanel addClientePanel = new JPanel(new BorderLayout());
 		
 		JPanel ptituloCrearCliente = new JPanel(new BorderLayout());
-		ptituloCrearCliente.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		ptituloCrearCliente.setBackground(new Color(24, 5, 92)); 
 		ptituloCrearCliente.setPreferredSize(new Dimension(800, 40));
 		
 		JLabel titulo = new JLabel(" INTRODUZCA DATOS DEL NUEVO CLIENTE "); 
@@ -868,7 +870,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		JPanel panelNombre = new JPanel(new BorderLayout());
 		panelNombre.setBorder(BorderFactory.createCompoundBorder(
 		        BorderFactory.createTitledBorder("Nombre"),
-		        BorderFactory.createEmptyBorder(10, 15, 15, 15) // top, left, bottom, right
+		        BorderFactory.createEmptyBorder(10, 15, 15, 15)
 		));
 		panelNombre.add(campoNombre, BorderLayout.CENTER);
 
@@ -943,7 +945,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		main.setBackground(Color.WHITE);
 
 		JPanel pNorte = new JPanel(new BorderLayout());
-		pNorte.setBackground(new Color(24, 5, 92)); // Azul corporativo
+		pNorte.setBackground(new Color(24, 5, 92)); 
 		pNorte.setPreferredSize(new Dimension(800, 60));
 		
 		JLabel titulo = new JLabel("  DEUSTOBANK PRINCIPAL"); 
@@ -956,8 +958,8 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		lblReloj.setForeground(Color.WHITE);
 		
 		javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
-			java.time.LocalDateTime ahora = java.time.LocalDateTime.now(); // La hora actual 
-			String hora = ahora.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")); // Horas : Minutos : Segundos
+			java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+			String hora = ahora.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")); 
 			lblReloj.setText(hora + "  ");
 		});
 		timer.start();
@@ -1141,14 +1143,14 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 		crearTablaClientes(listaClientes);
 		JPanel panelBotones = new JPanel(new FlowLayout());
 		
-		//Image imagen = ((ImageIcon) icono).getImage().getScaledInstance(40, 50, Image.SCALE_DEFAULT);
+	
 		
 		
 		Icon icono2 = redimensionarIconoHQ("ProyectoAppBanco/src/resources/addUser.png", 40, 40);
 		Icon icono1 = redimensionarIconoHQ("ProyectoAppBanco/src/resources/sortasc.png", 40, 40);
 		
 		JButton botonAddCliente = new JButton(icono2);
-		//botonAddCliente.setIcon(new ImageIcon());
+	
 		botonAddCliente.setOpaque(true);
 		botonAddCliente.setBackground(new Color(235, 238, 255));
 		botonAddCliente.addActionListener(e -> card.show(panelCont, "crearCliente") );
@@ -1319,7 +1321,7 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 	public static void ordenarPorSaldoRecursivo(ArrayList<Cliente> lista, int n) {
 		
 		if(n <= 1) {
-			//System.out.println("Ordenada");
+			return;
 		}else {
 			
 			for(int i = 0 ; i < n; i ++) {
@@ -1347,17 +1349,16 @@ TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -
 			
 			
 			if(fullName.contains(txtFiltro.getText())) {
-				//System.out.println(fullName);
+		
 				listafiltro.add(cl);
 			};
 			
 		}
 		
-		//modeloTabla = new ModelTablaClientes(listafiltro);
-		//ModelTablaClientes modeloFiltro = new ModelTablaClientes(listafiltro);
+	
 		modeloTabla = new ModelTablaClientes(listafiltro);
 		tablaClientes.setModel(modeloTabla);
-		//tablaClientes.setModel(modeloTabla);
+
 		
 		
 		tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(150);
